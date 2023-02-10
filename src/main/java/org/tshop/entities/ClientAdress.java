@@ -1,5 +1,6 @@
 package org.tshop.entities;
 
+<<<<<<< HEAD
 import jakarta.persistence.*;
 
 @Entity
@@ -84,4 +85,10 @@ public class ClientAdress {
         this.apartment = apartment;
     }
 
+=======
+import jakarta.persistence.Entity;
+
+@Entity
+public class ClientAdress {
+>>>>>>> origin/master
 }

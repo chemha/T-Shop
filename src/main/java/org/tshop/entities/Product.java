@@ -1,5 +1,6 @@
 package org.tshop.entities;
 
+<<<<<<< HEAD
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -108,4 +109,10 @@ public class Product {
         this.quantity = quantity;
     }
 
+=======
+import jakarta.persistence.Entity;
+
+@Entity
+public class Product {
+>>>>>>> origin/master
 }

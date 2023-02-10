@@ -1,5 +1,6 @@
 package org.tshop.entities;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -31,4 +32,10 @@ public class Category {
         this.title = title;
     }
 
+=======
+import jakarta.persistence.Entity;
+
+@Entity
+public class Category {
+>>>>>>> origin/master
 }

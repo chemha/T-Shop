@@ -1,5 +1,6 @@
 package org.tshop.entities;
 
+<<<<<<< HEAD
 import jakarta.persistence.*;
 
 @Entity
@@ -52,4 +53,10 @@ public class Good {
         this.quantity = quantity;
     }
 
+=======
+import jakarta.persistence.Entity;
+
+@Entity
+public class Good {
+>>>>>>> origin/master
 }

@@ -1,5 +1,6 @@
 package org.tshop.entities;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -77,4 +78,10 @@ public class Client {
         this.password = password;
     }
 
+=======
+import jakarta.persistence.Entity;
+
+@Entity
+public class Client {
+>>>>>>> origin/master
 }
