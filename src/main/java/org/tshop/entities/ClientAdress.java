@@ -1,9 +1,14 @@
 package org.tshop.entities;
 
-import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "client_adress")
+@Getter
+@Setter
 public class ClientAdress {
     @Id
     @Column(name = "adress_id", columnDefinition = "INT UNSIGNED not null")
@@ -27,61 +32,4 @@ public class ClientAdress {
 
     @Column(name = "apartment", length = 50)
     private String apartment;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Client getCliend() {
-        return cliend;
-    }
-
-    public void setCliend(Client cliend) {
-        this.cliend = cliend;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getHome() {
-        return home;
-    }
-
-    public void setHome(String home) {
-        this.home = home;
-    }
-
-    public String getApartment() {
-        return apartment;
-    }
-
-    public void setApartment(String apartment) {
-        this.apartment = apartment;
-    }
-
 }

@@ -1,9 +1,15 @@
 package org.tshop.entities;
 
-import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+
 
 @Entity
 @Table(name = "`order`")
+@Getter
+@Setter
 public class Order {
     @Id
     @Column(name = "order_id", columnDefinition = "INT UNSIGNED not null")
@@ -28,61 +34,4 @@ public class Order {
 
     @Column(name = "order_status", nullable = false, length = 10)
     private String orderStatus;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Client getCliend() {
-        return cliend;
-    }
-
-    public void setCliend(Client cliend) {
-        this.cliend = cliend;
-    }
-
-    public ClientAdress getAdress() {
-        return adress;
-    }
-
-    public void setAdress(ClientAdress adress) {
-        this.adress = adress;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public String getDeliveryMethod() {
-        return deliveryMethod;
-    }
-
-    public void setDeliveryMethod(String deliveryMethod) {
-        this.deliveryMethod = deliveryMethod;
-    }
-
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public String getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(String orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
 }
