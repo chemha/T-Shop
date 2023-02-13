@@ -1,10 +1,12 @@
-package org.tshop.entities;
+package org.tshop.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "client")
@@ -29,4 +31,6 @@ public class Client {
 
     @Column(name = "password", nullable = false, length = 128)
     private String password;
+    @OneToMany (mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ClientAddress> addresses = new LinkedHashSet<>();
 }

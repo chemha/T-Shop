@@ -1,4 +1,4 @@
-package org.tshop.entities;
+package org.tshop.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "adress_id", nullable = false)
-    private ClientAdress adress;
+    private ClientAddress adress;
 
     @Column(name = "payment_method", nullable = false, length = 10)
     private String paymentMethod;

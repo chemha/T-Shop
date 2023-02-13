@@ -1,4 +1,4 @@
-package org.tshop.entities;
+package org.tshop.entity;
 
 import lombok.Getter;
 import lombok.Setter;
