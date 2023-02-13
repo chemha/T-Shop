@@ -2,14 +2,16 @@ package org.tshop.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "client_adress")
 @Getter
 @Setter
-public class ClientAdress {
+public class ClientAddress {
     @Id
     @Column(name = "adress_id", columnDefinition = "INT UNSIGNED not null")
     private Long id;
@@ -32,4 +34,15 @@ public class ClientAdress {
 
     @Column(name = "apartment", length = 50)
     private String apartment;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ClientAddress address = (ClientAddress) o;
+        return id != null && Objects.equals(id, address.id);
+    }
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
