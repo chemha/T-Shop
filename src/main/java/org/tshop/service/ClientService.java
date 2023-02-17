@@ -21,11 +21,12 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final AdressRepository adressRepository;
     @Transactional
-    public void createClient(final String email, final String password) {
+    public Client createClient(final String email, final String password) {
         final Client client = new Client();
         client.setEmail(email);
         client.setPassword(password);
         clientRepository.save(client);
+        return client;
     }
     @Transactional
     public Collection<ClientAddress> findAllClientAddress(final int id) {
