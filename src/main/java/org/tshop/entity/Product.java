@@ -5,19 +5,22 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity
-@Table(name = "product")
 @Getter
 @Setter
+@Entity
+@Table(name = "product")
 public class Product {
     @Id
-    @Column(name = "product_id", columnDefinition = "INT UNSIGNED not null")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "categoy_id", nullable = false)
-    private Category categoy;
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -39,4 +42,8 @@ public class Product {
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
+
+    @OneToMany(mappedBy = "product")
+    private Set<Good> goods = new LinkedHashSet<>();
+
 }

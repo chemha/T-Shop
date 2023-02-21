@@ -8,13 +8,14 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "client")
 @Getter
 @Setter
+@Entity
+@Table(name = "client")
 public class Client {
     @Id
-    @Column(name = "client_id", columnDefinition = "INT UNSIGNED not null")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
     private Long id;
 
     @Column(name = "name", length = 50)
@@ -31,6 +32,12 @@ public class Client {
 
     @Column(name = "password", nullable = false, length = 128)
     private String password;
-    @OneToMany (mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ClientAddress> addresses = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "client")
+    private Set<ClientAddress> clientAddresses = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "client")
+    private Set<Order> orders = new LinkedHashSet<>();
+
+
 }

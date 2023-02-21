@@ -5,13 +5,14 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "good")
 @Getter
 @Setter
+@Entity
+@Table(name = "good")
 public class Good {
     @Id
-    @Column(name = "good_id", columnDefinition = "INT UNSIGNED not null")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -24,4 +25,5 @@ public class Good {
 
     @Column(name = "quantity")
     private Integer quantity;
+
 }

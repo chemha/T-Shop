@@ -4,24 +4,26 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-
-@Entity
-@Table(name = "`order`")
 @Getter
 @Setter
+@Entity
+@Table(name = "`order`")
 public class Order {
     @Id
-    @Column(name = "order_id", columnDefinition = "INT UNSIGNED not null")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliend_id", nullable = false)
-    private Client cliend;
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "adress_id", nullable = false)
-    private ClientAddress adress;
+    @JoinColumn(name = "address_id", nullable = false)
+    private ClientAddress address;
 
     @Column(name = "payment_method", nullable = false, length = 10)
     private String paymentMethod;
@@ -34,4 +36,8 @@ public class Order {
 
     @Column(name = "order_status", nullable = false, length = 10)
     private String orderStatus;
+
+    @OneToMany(mappedBy = "order")
+    private Set<Good> goods = new LinkedHashSet<>();
+
 }

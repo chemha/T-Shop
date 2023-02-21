@@ -2,23 +2,24 @@ package org.tshop.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Entity
-@Table(name = "client_adress")
 @Getter
 @Setter
+@Entity
+@Table(name = "clientaddress")
 public class ClientAddress {
     @Id
-    @Column(name = "adress_id", columnDefinition = "INT UNSIGNED not null")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "cliend_id", nullable = false)
-    private Client cliend;
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
     @Column(name = "country", nullable = false, length = 45)
     private String country;
@@ -34,15 +35,8 @@ public class ClientAddress {
 
     @Column(name = "apartment", length = 50)
     private String apartment;
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        ClientAddress address = (ClientAddress) o;
-        return id != null && Objects.equals(id, address.id);
-    }
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+
+    @OneToMany(mappedBy = "address")
+    private Set<Order> orders = new LinkedHashSet<>();
+
 }

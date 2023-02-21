@@ -6,7 +6,7 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.tshop.entity.Client;
 import org.tshop.entity.ClientAddress;
-import org.tshop.repository.AdressRepository;
+import org.tshop.repository.AddressRepository;
 import org.tshop.repository.ClientRepository;
 
 import javax.transaction.Transactional;
@@ -19,21 +19,29 @@ import java.util.Optional;
 @Slf4j
 public class ClientService {
     private final ClientRepository clientRepository;
-    private final AdressRepository adressRepository;
+    private final AddressRepository adressRepository;
     @Transactional
-    public Client createClient(final String email, final String password) {
+    public void createClient(final String email, final String password) {
         final Client client = new Client();
         client.setEmail(email);
         client.setPassword(password);
         clientRepository.save(client);
-        return client;
+    }
+    @Transactional
+    public Client findClientByEmail(final String email) {
+        return clientRepository.findClientByEmail(email).orElse(null);
+    }
+
+    @Transactional
+    public void modifyClient(final Client client) {
+        clientRepository.save(client);
     }
     @Transactional
     public Collection<ClientAddress> findAllClientAddress(final int id) {
         final Optional<Client> clientById = clientRepository.findClientById(id);
         if (clientById.isPresent()) {
-            Hibernate.initialize(clientById.get().getAddresses());
-            return clientById.get().getAddresses();
+            Hibernate.initialize(clientById.get().getClientAddresses());
+            return clientById.get().getClientAddresses();
         } else {
             return Collections.emptyList();
         }
