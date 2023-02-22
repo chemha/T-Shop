@@ -143,7 +143,7 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- Sample data
 -- -----------------------------------------------------
 
-INSERT INTO `t-shop`.`client`
+INSERT INTO `t-shop`.`Client`
 (`id`,
 `name`,
 `surname`,
@@ -158,7 +158,7 @@ VALUES
 'test@test.test',
 'test');
 
-INSERT INTO `t-shop`.`clientaddress`
+INSERT INTO `t-shop`.`ClientAddress`
 (`id`,
 `client_id`,
 `country`,
@@ -175,14 +175,14 @@ VALUES
 'test',
 'test');
 
-INSERT INTO `t-shop`.`category`
+INSERT INTO `t-shop`.`Category`
 (`id`,
 `title`)
 VALUES
 (1,
 'test');
 
-INSERT INTO `t-shop`.`product`
+INSERT INTO `t-shop`.`Product`
 (`id`,
 `category_id`,
 `title`,
@@ -203,7 +203,7 @@ VALUES
 1.23,
 1);
 
-INSERT INTO `t-shop`.`order`
+INSERT INTO `t-shop`.`Order`
 (`id`,
 `client_id`,
 `address_id`,
@@ -220,7 +220,7 @@ VALUES
 'test',
 'test');
 
-INSERT INTO `t-shop`.`good`
+INSERT INTO `t-shop`.`Good`
 (`id`,
 `order_id`,
 `product_id`,
