@@ -9,6 +9,5 @@ import java.util.UUID;
 
 public interface AddressRepository extends JpaRepository<ClientAddress, UUID> {
     Optional<ClientAddress> findAddressById(int id);
-    Optional<ClientAddress> findAddressByClient(Client client);
-    Optional<ClientAddress> findAddressByClientId(int id);
+
 }

@@ -9,6 +9,5 @@ import java.util.UUID;
 public interface ClientRepository extends JpaRepository<Client, UUID> {
     Optional<Client> findClientById(long id);
     Optional<Client> findClientByEmail(String email);
-    Optional<Client> findClientByName(String name);
-    Optional<Client> findClientBySurname(String surname);
+
 }

@@ -19,17 +19,13 @@ import java.util.Optional;
 @Slf4j
 public class ClientService {
     private final ClientRepository clientRepository;
-    private final AddressRepository adressRepository;
+    private final AddressRepository addressRepository;
     @Transactional
     public void createClient(final String email, final String password) {
         final Client client = new Client();
         client.setEmail(email);
         client.setPassword(password);
         clientRepository.save(client);
-    }
-    @Transactional
-    public Client findClientByEmail(final String email) {
-        return clientRepository.findClientByEmail(email).orElse(null);
     }
 
     @Transactional
@@ -47,4 +43,8 @@ public class ClientService {
         }
     }
 
+    @Transactional
+    public Client findClientByEmail(final String email) {
+        return clientRepository.findClientByEmail(email).orElse(null);
+    }
 }

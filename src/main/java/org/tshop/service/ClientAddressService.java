@@ -12,18 +12,18 @@ import javax.transaction.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AddressService {
-    private final AddressRepository adressRepository;
+public class ClientAddressService {
+    private final AddressRepository addressRepository;
     @Transactional
-    public ClientAddress createAddress(final Client client, final String country, final String postalCode, final String street) {
+    public void createAddress(final Client client, final String country, final String postalCode, final String street , final String home, final String apartment) {
         final ClientAddress address = new ClientAddress();
         address.setClient(client);
         address.setCountry(country);
         address.setPostalCode(postalCode);
         address.setStreet(street);
+        address.setHome(home);
+        address.setApartment(apartment);
 
-        adressRepository.save(address);
-
-        return address;
+        addressRepository.save(address);
     }
 }
