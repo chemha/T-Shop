@@ -19,11 +19,12 @@ USE `t-shop` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `t-shop`.`Client` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(50) NULL,
-  `surname` VARCHAR(50) NULL,
-  `birthdate` DATE NULL,
+  `name` VARCHAR(50) NOT NULL,
+  `surname` VARCHAR(50) NOT NULL,
+  `birthdate` DATE NOT NULL,
   `email` VARCHAR(254) NOT NULL,
   `password` VARCHAR(128) NOT NULL,
+  `admin` TINYINT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB;
@@ -149,14 +150,16 @@ INSERT INTO `t-shop`.`Client`
 `surname`,
 `birthdate`,
 `email`,
-`password`)
+`password`,
+`admin`)
 VALUES
 (1,
 'test',
 'test',
 '2000-01-01',
 'test@test.test',
-'test');
+'test',
+false);
 
 INSERT INTO `t-shop`.`ClientAddress`
 (`id`,

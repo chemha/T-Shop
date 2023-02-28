@@ -1,11 +1,11 @@
-package org.tshop.service;
+package org.tshop.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tshop.entity.Client;
-import org.tshop.entity.ClientAddress;
-import org.tshop.repository.AddressRepository;
+import org.tshop.entities.Client;
+import org.tshop.entities.ClientAddress;
+import org.tshop.repositories.AddressRepository;
 
 import javax.transaction.Transactional;
 

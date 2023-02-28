@@ -1,0 +1,206 @@
+openapi: "3.0.0"
+
+info:
+  title: T-Shop
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/
+
+tags:
+  - name: Client
+    description: Everything about clients
+
+paths:
+  /clients:
+    get:
+      summary: List all clients
+      operationId: listClients
+      tags:
+        - Client
+      parameters:
+        - name: pageNumber
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 25
+      responses:
+        '200':
+          description: A paged array of clients
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clients"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a client
+      operationId: createClient
+      tags:
+        - Client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientProperties'
+      responses:
+        '201':
+          description: The new created client
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /clients/{id}:
+    get:
+      summary: Get the existing client by its ID
+      operationId: getClient
+      tags:
+        - Client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: long
+          description: The ID of the client to retrieve
+      responses:
+        '200':
+          description: The requested client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    put:
+      summary: Update the existing city by its ID
+      operationId: updateClient
+      tags:
+        - Client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: long
+          description: The ID of an existing client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientProperties'
+      responses:
+        '200':
+          description: The updated city
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Delete the existing city by its ID
+      operationId: deleteClient
+      tags:
+        - Client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: long
+          description: The ID of an existing client
+      responses:
+        '204':
+          description: No content upon successful client deletion
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Client:
+      allOf:
+        - $ref: '#/components/schemas/CityProperties'
+        - type: object
+          properties:
+            id:
+              type: long
+
+    ClientProperties:
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        birthdate:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        admin:
+          type: boolean
+      required:
+        - name
+        - surname
+        - birthdate
+        - email
+        - password
+
+    Clients:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+        pageCount:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string

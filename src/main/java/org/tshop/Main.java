@@ -5,13 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.tshop.entity.Client;
-import org.tshop.entity.ClientAddress;
-import org.tshop.repository.ClientRepository;
-import org.tshop.service.ClientAddressService;
-import org.tshop.service.ClientService;
+import org.tshop.entities.Client;
+import org.tshop.entities.ClientAddress;
+import org.tshop.repositories.ClientRepository;
+import org.tshop.services.ClientAddressService;
+import org.tshop.services.ClientService;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @SpringBootApplication
@@ -29,8 +28,6 @@ public class Main implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        test();
-
         Thread.currentThread().join();
     }
 
@@ -52,7 +49,7 @@ public class Main implements CommandLineRunner {
         log.info("If found, email is:" + found.getEmail() + "and password is" + found.getPassword());
         log.info("Modifiying...");
         found.setPassword("modified");
-        clientservice.modifyClient(found);
+        clientservice.updateClient(found);
         found = clientservice.findClientByEmail(email);
         log.info("If found, email is:" + found.getEmail() + "and password is" + found.getPassword());
         log.info("Creating address...");
