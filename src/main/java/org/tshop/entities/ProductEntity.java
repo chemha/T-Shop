@@ -11,8 +11,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "product")
-public class Product {
+@Table(name = "Product")
+public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
@@ -20,7 +20,7 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    private CategoryEntity category;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -43,7 +43,7 @@ public class Product {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @OneToMany(mappedBy = "product")
-    private Set<Good> goods = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "productEntity")
+    private Set<GoodEntity> goodEntities = new LinkedHashSet<>();
 
 }

@@ -1,12 +1,11 @@
 package org.tshop.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.tshop.entities.Good;
+import org.tshop.entities.GoodEntity;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface GoodRepository extends JpaRepository<Good, Long> {
-    Optional<Good> findGoodById(Long id);
+public interface GoodRepository extends JpaRepository<GoodEntity, Long> {
+    Optional<GoodEntity> findGoodById(Long id);
 
 }

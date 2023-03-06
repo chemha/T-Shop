@@ -15,17 +15,18 @@ paths:
   /clients:
     get:
       summary: List all clients
-      operationId: listClients
+      operationId: getClientSearchResult
       tags:
         - Client
       parameters:
-        - name: pageNumber
-          in: query
+        - in: query
+          name: pageNumber
           schema:
             type: integer
             minimum: 1
             default: 1
-        - name: pageSize
+        - in: query
+          name: pageSize
           schema:
             type: integer
             minimum: 1
@@ -34,21 +35,11 @@ paths:
       responses:
         '200':
           description: A paged array of clients
-          headers:
-            x-next:
-              description: A link to the next page of responses
-              schema:
-                type: string
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Clients"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ClientSearchResult"
+
     post:
       summary: Create a client
       operationId: createClient
@@ -63,12 +54,7 @@ paths:
       responses:
         '201':
           description: The new created client
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+
   /clients/{id}:
     get:
       summary: Get the existing client by its ID
@@ -76,8 +62,8 @@ paths:
       tags:
         - Client
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: long
@@ -89,15 +75,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Client"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 
     put:
-      summary: Update the existing city by its ID
+      summary: Update the existing client by its ID
       operationId: updateClient
       tags:
         - Client
@@ -116,20 +96,14 @@ paths:
               $ref: '#/components/schemas/ClientProperties'
       responses:
         '200':
-          description: The updated city
+          description: The updated client
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 
     delete:
-      summary: Delete the existing city by its ID
+      summary: Delete the existing client by its ID
       operationId: deleteClient
       tags:
         - Client
@@ -143,18 +117,12 @@ paths:
       responses:
         '204':
           description: No content upon successful client deletion
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
     Client:
       allOf:
-        - $ref: '#/components/schemas/CityProperties'
+        - $ref: '#/components/schemas/ClientProperties'
         - type: object
           properties:
             id:
@@ -181,7 +149,7 @@ components:
         - email
         - password
 
-    Clients:
+    ClientSearchResult:
       properties:
         content:
           type: array
@@ -193,14 +161,3 @@ components:
           type: integer
         pageSize:
           type: integer
-
-    Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-        message:
-          type: string

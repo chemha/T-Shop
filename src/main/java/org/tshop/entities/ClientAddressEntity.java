@@ -10,8 +10,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "clientaddress")
-public class ClientAddress {
+@Table(name = "ClientAddress")
+public class ClientAddressEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
@@ -19,7 +19,7 @@ public class ClientAddress {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    private ClientEntity client;
 
     @Column(name = "country", nullable = false, length = 45)
     private String country;
@@ -37,6 +37,6 @@ public class ClientAddress {
     private String apartment;
 
     @OneToMany(mappedBy = "address")
-    private Set<Order> orders = new LinkedHashSet<>();
+    private Set<OrderEntity> orderEntities = new LinkedHashSet<>();
 
 }

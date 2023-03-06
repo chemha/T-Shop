@@ -3,8 +3,8 @@ package org.tshop.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tshop.entities.Client;
-import org.tshop.entities.ClientAddress;
+import org.tshop.entities.ClientEntity;
+import org.tshop.entities.ClientAddressEntity;
 import org.tshop.repositories.AddressRepository;
 
 import javax.transaction.Transactional;
@@ -15,8 +15,8 @@ import javax.transaction.Transactional;
 public class ClientAddressService {
     private final AddressRepository addressRepository;
     @Transactional
-    public void createAddress(final Client client, final String country, final String postalCode, final String street , final String home, final String apartment) {
-        final ClientAddress address = new ClientAddress();
+    public void createAddress(final ClientEntity client, final String country, final String postalCode, final String street , final String home, final String apartment) {
+        final ClientAddressEntity address = new ClientAddressEntity();
         address.setClient(client);
         address.setCountry(country);
         address.setPostalCode(postalCode);

@@ -10,8 +10,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "category")
-public class Category {
+@Table(name = "Category")
+public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
@@ -21,6 +21,6 @@ public class Category {
     private String title;
 
     @OneToMany(mappedBy = "category")
-    private Set<Product> products = new LinkedHashSet<>();
+    private Set<ProductEntity> productEntities = new LinkedHashSet<>();
 
 }

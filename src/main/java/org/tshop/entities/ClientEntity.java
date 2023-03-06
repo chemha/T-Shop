@@ -13,8 +13,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "client")
-public class Client {
+@Table(name = "Client")
+public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
@@ -48,9 +48,9 @@ public class Client {
     private boolean admin;
 
     @OneToMany(mappedBy = "client")
-    private Set<ClientAddress> clientAddresses = new LinkedHashSet<>();
+    private Set<ClientAddressEntity> clientAddressEntities = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "client")
-    private Set<Order> orders = new LinkedHashSet<>();
+    private Set<OrderEntity> orderEntities = new LinkedHashSet<>();
 
 }
