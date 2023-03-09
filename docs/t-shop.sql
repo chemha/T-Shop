@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `t-shop`.`ClientAddress` (
   `home` VARCHAR(50) NULL,
   `apartment` VARCHAR(50) NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_Client_adress_Client_idx` (`client_id` ASC) VISIBLE,
-  CONSTRAINT `fk_Client_adress_Client`
+  INDEX `fk_ClientAddress_Client1_idx` (`client_id` ASC) VISIBLE,
+  CONSTRAINT `fk_ClientAddress_Client1`
     FOREIGN KEY (`client_id`)
     REFERENCES `t-shop`.`Client` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -63,17 +63,17 @@ CREATE TABLE IF NOT EXISTS `t-shop`.`Order` (
   `payment_status` VARCHAR(10) NOT NULL,
   `order_status` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_Order_Client1_idx` (`client_id` ASC) VISIBLE,
-  INDEX `fk_Order_Client_adress1_idx` (`address_id` ASC) VISIBLE,
-  CONSTRAINT `fk_Order_Client1`
+  INDEX `fk_Order_Client_idx` (`client_id` ASC) VISIBLE,
+  INDEX `fk_Order_ClientAddress1_idx` (`address_id` ASC) VISIBLE,
+  CONSTRAINT `fk_Order_Client`
     FOREIGN KEY (`client_id`)
     REFERENCES `t-shop`.`Client` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Order_Client_adress1`
+  CONSTRAINT `fk_Order_ClientAddress1`
     FOREIGN KEY (`address_id`)
     REFERENCES `t-shop`.`ClientAddress` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `t-shop`.`Product` (
   CONSTRAINT `fk_Product_Category1`
     FOREIGN KEY (`category_id`)
     REFERENCES `t-shop`.`Category` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -116,22 +116,22 @@ ENGINE = InnoDB;
 -- Table `t-shop`.`Good`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `t-shop`.`Good` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `order_id` INT UNSIGNED NOT NULL,
   `product_id` INT UNSIGNED NOT NULL,
-  `quantity` INT NULL,
+  `quantity` INT UNSIGNED NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_Good_Order1_idx` (`order_id` ASC) VISIBLE,
   INDEX `fk_Good_Product1_idx` (`product_id` ASC) VISIBLE,
-  CONSTRAINT `fk_Good_Order1`
-    FOREIGN KEY (`order_id`)
-    REFERENCES `t-shop`.`Order` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+  INDEX `fk_Good_Order1_idx` (`order_id` ASC) VISIBLE,
   CONSTRAINT `fk_Good_Product1`
     FOREIGN KEY (`product_id`)
     REFERENCES `t-shop`.`Product` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Good_Order1`
+    FOREIGN KEY (`order_id`)
+    REFERENCES `t-shop`.`Order` (`id`)
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -158,7 +158,7 @@ VALUES
 'test',
 '2000-01-01',
 'test@test.test',
-'test',
+'this should be a hash',
 false);
 
 INSERT INTO `t-shop`.`ClientAddress`

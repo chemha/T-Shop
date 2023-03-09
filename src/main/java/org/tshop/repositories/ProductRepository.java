@@ -5,6 +5,6 @@ import org.tshop.entities.ProductEntity;
 
 import java.util.Optional;
 
-public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
-    Optional<ProductEntity> findProductById(Long id);
+public interface ProductRepository extends JpaRepository<ProductEntity, Integer> {
+    Optional<ProductEntity> findProductById(Integer id);
 }

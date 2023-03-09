@@ -2,6 +2,8 @@ package org.tshop.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,12 +15,12 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "Client")
+@Table(name = "client")
 public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
-    private Long id;
+    private Integer id;
 
     @Size(max = 50)
     @NotNull
@@ -45,12 +47,13 @@ public class ClientEntity {
     private String password;
 
     @Column(name = "admin")
-    private boolean admin;
+    private Boolean admin;
+
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.REMOVE, targetEntity = ClientAddressEntity.class, fetch = FetchType.EAGER, mappedBy = "client")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<ClientAddressEntity> clientAddresses = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "client")
-    private Set<ClientAddressEntity> clientAddressEntities = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "client")
-    private Set<OrderEntity> orderEntities = new LinkedHashSet<>();
+    private Set<OrderEntity> orders = new LinkedHashSet<>();
 
 }

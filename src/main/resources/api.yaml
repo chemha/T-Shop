@@ -66,7 +66,7 @@ paths:
           name: id
           required: true
           schema:
-            type: long
+            type: integer
           description: The ID of the client to retrieve
       responses:
         '200':
@@ -86,7 +86,7 @@ paths:
           in: path
           required: true
           schema:
-            type: long
+            type: integer
           description: The ID of an existing client
       requestBody:
         required: true
@@ -112,7 +112,7 @@ paths:
           in: path
           required: true
           schema:
-            type: long
+            type: integer
           description: The ID of an existing client
       responses:
         '204':
@@ -126,7 +126,7 @@ components:
         - type: object
           properties:
             id:
-              type: long
+              type: integer
 
     ClientProperties:
       properties:

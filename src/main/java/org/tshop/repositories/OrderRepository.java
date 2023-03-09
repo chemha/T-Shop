@@ -5,7 +5,7 @@ import org.tshop.entities.OrderEntity;
 
 import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
-    Optional<OrderEntity> findProductById(Long id);
+public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
+    Optional<OrderEntity> findProductById(Integer id);
 
 }

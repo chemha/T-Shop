@@ -4,26 +4,29 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Good")
+@Table(name = "good")
 public class GoodEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", columnDefinition = "INT UNSIGNED not null")
-    private Long id;
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
-    private OrderEntity orderEntity;
+    private OrderEntity order;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    private ProductEntity productEntity;
+    private ProductEntity product;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "quantity", columnDefinition = "INT UNSIGNED")
+    private Long quantity;
 
 }

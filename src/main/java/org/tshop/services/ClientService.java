@@ -31,12 +31,12 @@ public class ClientService {
     private final AddressRepository addressRepository;
     private final ClientMapper mapper;
 
-    private ClientEntity loadEntity(Long id) {
+    private ClientEntity loadEntity(Integer id) {
         return clientRepository.findById(id).orElseThrow(() -> new RuntimeException("No client found by specified ID"));
     }
 
     @Transactional
-    public ClientDto get(final Long id) {
+    public ClientDto get(final Integer id) {
         final ClientEntity entity = loadEntity(id);
         return mapper.createDto(entity);
     }
@@ -48,7 +48,7 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientDto update(final Long id, final ClientPropertiesDto properties) {
+    public ClientDto update(final Integer id, final ClientPropertiesDto properties) {
         final ClientEntity entity = loadEntity(id);
 
         mapper.updateEntity(entity, properties);
@@ -58,17 +58,17 @@ public class ClientService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         ClientEntity entity = loadEntity(id);
         clientRepository.delete(entity);
     }
 
     @Transactional
-    public Collection<ClientAddressEntity> findAllClientAddress(final Long id) {
+    public Collection<ClientAddressEntity> findAllClientAddress(final Integer id) {
         final Optional<ClientEntity> clientById = clientRepository.findClientById(id);
         if (clientById.isPresent()) {
-            Hibernate.initialize(clientById.get().getClientAddressEntities());
-            return clientById.get().getClientAddressEntities();
+            Hibernate.initialize(clientById.get().getClientAddresses());
+            return clientById.get().getClientAddresses();
         } else {
             return Collections.emptyList();
         }

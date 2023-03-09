@@ -5,7 +5,7 @@ import org.tshop.entities.ClientAddressEntity;
 
 import java.util.Optional;
 
-public interface AddressRepository extends JpaRepository<ClientAddressEntity, Long> {
-    Optional<ClientAddressEntity> findAddressById(Long id);
+public interface AddressRepository extends JpaRepository<ClientAddressEntity, Integer> {
+    Optional<ClientAddressEntity> findAddressById(Integer id);
 
 }

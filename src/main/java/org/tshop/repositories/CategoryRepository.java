@@ -5,7 +5,7 @@ import org.tshop.entities.CategoryEntity;
 
 import java.util.Optional;
 
-public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
-    Optional<CategoryEntity> findCategoryById(Long id);
+public interface CategoryRepository extends JpaRepository<CategoryEntity, Integer> {
+    Optional<CategoryEntity> findCategoryById(Integer id);
     Optional<CategoryEntity> findCategoryByTitle(String title);
 }
