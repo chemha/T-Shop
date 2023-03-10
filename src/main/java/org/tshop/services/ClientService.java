@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tshop.dto.ClientDto;
 import org.tshop.dto.ClientPropertiesDto;
@@ -28,8 +29,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClientService {
     private final ClientRepository clientRepository;
-    private final AddressRepository addressRepository;
     private final ClientMapper mapper;
+    private final BCryptPasswordEncoder encoder;
 
     private ClientEntity loadEntity(Integer id) {
         return clientRepository.findById(id).orElseThrow(() -> new RuntimeException("No client found by specified ID"));
@@ -43,12 +44,17 @@ public class ClientService {
 
     @Transactional
     public ClientDto create(final ClientPropertiesDto properties) {
+        if (properties.getAdmin() == null) properties.setAdmin(false);
+        properties.setPassword(encoder.encode(properties.getPassword()));
+
         final ClientEntity entity = mapper.createEntity(properties);
+
         return mapper.createDto(clientRepository.save(entity));
     }
 
     @Transactional
     public ClientDto update(final Integer id, final ClientPropertiesDto properties) {
+        if (properties.getAdmin() == null) properties.setAdmin(false);
         final ClientEntity entity = loadEntity(id);
 
         mapper.updateEntity(entity, properties);

@@ -10,20 +10,23 @@ import org.tshop.dto.ClientPropertiesDto;
 import org.tshop.dto.ClientSearchResultDto;
 import org.tshop.services.ClientService;
 
+import java.time.LocalDate;
+
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/clients")
 public class ClientController implements ClientsApi {
     private final ClientService clientService;
 
     @Override
-    @PostMapping("/clients")
+    @PostMapping
     public ResponseEntity<Void> createClient(@RequestBody ClientPropertiesDto properties) {
         clientService.create(properties);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    @DeleteMapping("/clients/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {
         clientService.delete(id);
         return ResponseEntity.noContent().build();
@@ -31,20 +34,21 @@ public class ClientController implements ClientsApi {
 
 
     @Override
-    @GetMapping("/clients/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ClientDto> getClient(@PathVariable Integer id) {
         ClientDto dto = clientService.get(id);
         return ResponseEntity.ok(dto);
     }
 
     @Override
+    @GetMapping
     public ResponseEntity<ClientSearchResultDto> getClientSearchResult(Integer pageNumber, Integer pageSize) {
         ClientSearchResultDto dto = clientService.getSearchResult(pageNumber, pageSize);
         return ResponseEntity.ok().body(dto);
     }
 
     @Override
-    @PutMapping("/clients/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<ClientDto> updateClient(Integer id, ClientPropertiesDto properties) {
         final ClientDto dto = clientService.update(id, properties);
         return ResponseEntity.ok().body(dto);

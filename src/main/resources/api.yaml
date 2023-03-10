@@ -10,6 +10,8 @@ servers:
 tags:
   - name: Client
     description: Everything about clients
+  - name: Address
+    description: Everything about addresses
 
 paths:
   /clients:
@@ -118,6 +120,113 @@ paths:
         '204':
           description: No content upon successful client deletion
 
+  /addresses:
+    get:
+      summary: List all addresses
+      operationId: getAddressSearchResult
+      tags:
+        - Address
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 25
+      responses:
+        '200':
+          description: A paged array of addresses
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddressSearchResult"
+
+    post:
+      summary: Create a address
+      operationId: createAddress
+      tags:
+        - Address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressProperties'
+      responses:
+        '201':
+          description: The new created address
+
+  /addresses/{id}:
+    get:
+      summary: Get the existing address by its ID
+      operationId: getAddress
+      tags:
+        - Address
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the client to retrieve
+      responses:
+        '200':
+          description: The requested client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Address"
+
+    put:
+      summary: Update the existing client by its ID
+      operationId: updateAddress
+      tags:
+        - Address
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressProperties'
+      responses:
+        '200':
+          description: The updated address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+
+    delete:
+      summary: Delete the existing address by its ID
+      operationId: deleteAddress
+      tags:
+        - Address
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing address
+      responses:
+        '204':
+          description: No content upon successful address deletion
+
+
 components:
   schemas:
     Client:
@@ -155,6 +264,47 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Client'
+        pageCount:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+
+    Address:
+      allOf:
+        - $ref: '#/components/schemas/AddressProperties'
+        - type: object
+          properties:
+            id:
+              type: integer
+
+    AddressProperties:
+      properties:
+        client_id:
+          type: integer
+        country:
+          type: string
+        postal_code:
+          type: string
+        street:
+          type: string
+        home:
+          type: string
+        apartment:
+          type: boolean
+      required:
+        - client_id
+        - country
+        - postal_code
+        - street
+
+    AddressSearchResult:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
         pageCount:
           type: integer
         pageNumber:

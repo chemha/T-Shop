@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `t-shop`.`Client` (
   `birthdate` DATE NOT NULL,
   `email` VARCHAR(254) NOT NULL,
   `password` VARCHAR(128) NOT NULL,
-  `admin` TINYINT NULL,
+  `admin` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB;
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `t-shop`.`Order` (
   CONSTRAINT `fk_Order_Client`
     FOREIGN KEY (`client_id`)
     REFERENCES `t-shop`.`Client` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Order_ClientAddress1`
     FOREIGN KEY (`address_id`)
@@ -140,6 +140,7 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
+
 -- -----------------------------------------------------
 -- Sample data
 -- -----------------------------------------------------
@@ -158,7 +159,8 @@ VALUES
 'test',
 '2000-01-01',
 'test@test.test',
-'this should be a hash',
+-- Password is test
+'$2a$10$2.3RP8B0uhCx8.vRPo7oQuyB8mNBK7L1I7zmiZ7scH4Tq37fSfSsu',
 false);
 
 INSERT INTO `t-shop`.`ClientAddress`
