@@ -1,7 +1,6 @@
 package org.tshop.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,11 +14,9 @@ import org.tshop.dto.ClientSearchResultDto;
 import org.tshop.entities.ClientEntity;
 import org.tshop.entities.ClientAddressEntity;
 import org.tshop.mappers.ClientMapper;
-import org.tshop.repositories.AddressRepository;
 import org.tshop.repositories.ClientRepository;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +68,7 @@ public class ClientService {
 
     @Transactional
     public Collection<ClientAddressEntity> findAllClientAddress(final Integer id) {
-        final Optional<ClientEntity> clientById = clientRepository.findClientById(id);
+        final Optional<ClientEntity> clientById = clientRepository.findById(id);
         if (clientById.isPresent()) {
             Hibernate.initialize(clientById.get().getClientAddresses());
             return clientById.get().getClientAddresses();

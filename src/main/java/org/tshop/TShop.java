@@ -2,24 +2,15 @@ package org.tshop;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.tshop.entities.ClientEntity;
-import org.tshop.entities.ClientAddressEntity;
-import org.tshop.repositories.ClientRepository;
-import org.tshop.services.ClientAddressService;
-import org.tshop.services.ClientService;
-
-import java.util.Set;
 
 @SpringBootApplication
 @RequiredArgsConstructor
 @Slf4j
-public class Main {
+public class TShop {
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(TShop.class, args);
     }
 
 

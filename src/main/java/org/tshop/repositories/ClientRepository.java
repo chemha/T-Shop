@@ -6,7 +6,6 @@ import org.tshop.entities.ClientEntity;
 import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<ClientEntity, Integer> {
-    Optional<ClientEntity> findClientById(Integer id);
     Optional<ClientEntity> findClientByEmail(String email);
 
 }

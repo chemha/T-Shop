@@ -1,4 +1,4 @@
-package org.tshop.config;
+package org.tshop.configuration;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

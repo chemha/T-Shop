@@ -10,8 +10,16 @@ servers:
 tags:
   - name: Client
     description: Everything about clients
-  - name: Address
+  - name: ClientAddress
     description: Everything about addresses
+  - name: Product
+    description: Everything about products
+  - name: Good
+    description: Everything about goods
+  - name: Order
+    description: Everything about orders
+  - name: Category
+    description: Everything about categories
 
 paths:
   /clients:
@@ -56,7 +64,6 @@ paths:
       responses:
         '201':
           description: The new created client
-
   /clients/{id}:
     get:
       summary: Get the existing client by its ID
@@ -120,12 +127,12 @@ paths:
         '204':
           description: No content upon successful client deletion
 
-  /addresses:
+  /client-addresses:
     get:
-      summary: List all addresses
-      operationId: getAddressSearchResult
+      summary: List all client addresses
+      operationId: getClientAddressSearchResult
       tags:
-        - Address
+        - ClientAddress
       parameters:
         - in: query
           name: pageNumber
@@ -142,33 +149,137 @@ paths:
             default: 25
       responses:
         '200':
-          description: A paged array of addresses
+          description: A paged array of client addresses
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AddressSearchResult"
+                $ref: "#/components/schemas/ClientAddressSearchResult"
 
     post:
-      summary: Create a address
-      operationId: createAddress
+      summary: Create a client address
+      operationId: createClientAddress
       tags:
-        - Address
+        - ClientAddress
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressProperties'
+              $ref: '#/components/schemas/ClientAddressProperties'
       responses:
         '201':
           description: The new created address
-
-  /addresses/{id}:
+  /client-addresses/{id}:
     get:
-      summary: Get the existing address by its ID
-      operationId: getAddress
+      summary: Get the existing client address by its ID
+      operationId: getClientAddress
       tags:
         - Address
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the client address to retrieve
+      responses:
+        '200':
+          description: The requested client address
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientAddress"
+
+    put:
+      summary: Update the existing client by its ID
+      operationId: updateClientAddress
+      tags:
+        - ClientAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing client address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientAddressProperties'
+      responses:
+        '200':
+          description: The updated client address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientAddress'
+
+    delete:
+      summary: Delete the existing address by its ID
+      operationId: deleteClientAddress
+      tags:
+        - ClientAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing client address
+      responses:
+        '204':
+          description: No content upon successful client address deletion
+
+  /products:
+    get:
+      summary: List all products
+      operationId: getProductSearchResult
+      tags:
+        - Product
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 25
+      responses:
+        '200':
+          description: A paged array of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductSearchResult"
+
+    post:
+      summary: Create a product
+      operationId: createProduct
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductProperties'
+      responses:
+        '201':
+          description: The new created product
+  /products/{id}:
+    get:
+      summary: Get the existing product by its ID
+      operationId: getProduct
+      tags:
+        - Product
       parameters:
         - in: path
           name: id
@@ -182,50 +293,364 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Address"
+                $ref: "#/components/schemas/Product"
 
     put:
       summary: Update the existing client by its ID
-      operationId: updateAddress
+      operationId: updateProduct
       tags:
-        - Address
+        - Product
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: The ID of an existing address
+          description: The ID of an existing product
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddressProperties'
+              $ref: '#/components/schemas/ProductProperties'
       responses:
         '200':
-          description: The updated address
+          description: The updated product
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Address'
+                $ref: '#/components/schemas/Product'
 
     delete:
-      summary: Delete the existing address by its ID
-      operationId: deleteAddress
+      summary: Delete the existing product by its ID
+      operationId: deleteProduct
       tags:
-        - Address
+        - Product
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: The ID of an existing address
+          description: The ID of an existing product
       responses:
         '204':
-          description: No content upon successful address deletion
+          description: No content upon successful product deletion
 
+  /goods:
+    get:
+      summary: List all goods
+      operationId: getGoodSearchResult
+      tags:
+        - Good
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 25
+      responses:
+        '200':
+          description: A paged array of goods
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoodSearchResult"
+
+    post:
+      summary: Create a good
+      operationId: createGood
+      tags:
+        - Good
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoodProperties'
+      responses:
+        '201':
+          description: The new created good
+  /goods/{id}:
+    get:
+      summary: Get the existing good by its ID
+      operationId: getGood
+      tags:
+        - Good
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the client to retrieve
+      responses:
+        '200':
+          description: The requested client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Good"
+
+    put:
+      summary: Update the existing client by its ID
+      operationId: updateGood
+      tags:
+        - Good
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing good
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoodProperties'
+      responses:
+        '200':
+          description: The updated good
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Good'
+
+    delete:
+      summary: Delete the existing good by its ID
+      operationId: deleteGood
+      tags:
+        - Good
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing good
+      responses:
+        '204':
+          description: No content upon successful good deletion
+
+  /orders:
+    get:
+      summary: List all orders
+      operationId: getOrderSearchResult
+      tags:
+        - Order
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 25
+      responses:
+        '200':
+          description: A paged array of orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderSearchResult"
+
+    post:
+      summary: Create a order
+      operationId: createOrder
+      tags:
+        - Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderProperties'
+      responses:
+        '201':
+          description: The new created order
+  /orders/{id}:
+    get:
+      summary: Get the existing order by its ID
+      operationId: getOrder
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the client to retrieve
+      responses:
+        '200':
+          description: The requested client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+    put:
+      summary: Update the existing client by its ID
+      operationId: updateOrder
+      tags:
+        - Order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderProperties'
+      responses:
+        '200':
+          description: The updated order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+    delete:
+      summary: Delete the existing order by its ID
+      operationId: deleteOrder
+      tags:
+        - Order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing order
+      responses:
+        '204':
+          description: No content upon successful order deletion
+
+  /categories:
+    get:
+      summary: List all categories
+      operationId: getCategorySearchResult
+      tags:
+        - Category
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 25
+      responses:
+        '200':
+          description: A paged array of categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategorySearchResult"
+
+    post:
+      summary: Create a category
+      operationId: createCategory
+      tags:
+        - Category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryProperties'
+      responses:
+        '201':
+          description: The new created category
+  /categories/{id}:
+    get:
+      summary: Get the existing category by its ID
+      operationId: getCategory
+      tags:
+        - Category
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the client to retrieve
+      responses:
+        '200':
+          description: The requested client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+    put:
+      summary: Update the existing client by its ID
+      operationId: updateCategory
+      tags:
+        - Category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryProperties'
+      responses:
+        '200':
+          description: The updated category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+    delete:
+      summary: Delete the existing category by its ID
+      operationId: deleteCategory
+      tags:
+        - Category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of an existing category
+      responses:
+        '204':
+          description: No content upon successful category deletion
 
 components:
   schemas:
@@ -236,7 +661,6 @@ components:
           properties:
             id:
               type: integer
-
     ClientProperties:
       properties:
         name:
@@ -257,7 +681,6 @@ components:
         - birthdate
         - email
         - password
-
     ClientSearchResult:
       properties:
         content:
@@ -271,15 +694,14 @@ components:
         pageSize:
           type: integer
 
-    Address:
+    ClientAddress:
       allOf:
-        - $ref: '#/components/schemas/AddressProperties'
+        - $ref: '#/components/schemas/ClientAddressProperties'
         - type: object
           properties:
             id:
               type: integer
-
-    AddressProperties:
+    ClientAddressProperties:
       properties:
         client_id:
           type: integer
@@ -298,13 +720,152 @@ components:
         - country
         - postal_code
         - street
-
-    AddressSearchResult:
+    ClientAddressSearchResult:
       properties:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/Address'
+            $ref: '#/components/schemas/ClientAddress'
+        pageCount:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+
+    Product:
+      allOf:
+        - $ref: '#/components/schemas/ProductProperties'
+        - type: object
+          properties:
+            id:
+              type: integer
+    ProductProperties:
+      properties:
+        category_id:
+          type: integer
+        title:
+          type: string
+        price:
+          type: float
+        brand:
+          type: string
+        color:
+          type: string
+        weight:
+          type: float
+        volume:
+          type: float
+        quantity:
+          type: integer
+      required:
+        - category_id
+        - title
+        - price
+    ProductSearchResult:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        pageCount:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+
+    Good:
+      allOf:
+        - $ref: '#/components/schemas/GoodProperties'
+        - type: object
+          properties:
+            id:
+              type: integer
+    GoodProperties:
+      properties:
+        order_id:
+          type: integer
+        product_id:
+          type: integer
+        quantity:
+          type: integer
+      required:
+        - order_id
+        - product_id
+    GoodSearchResult:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Good'
+        pageCount:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+
+    Order:
+      allOf:
+        - $ref: '#/components/schemas/OrderProperties'
+        - type: object
+          properties:
+            id:
+              type: integer
+    OrderProperties:
+      properties:
+        client_id:
+          type: integer
+        address_id:
+          type: integer
+        payment_method:
+          type: string
+        delivery_method:
+          type: string
+        payment_status:
+          type: string
+        order_status:
+          type: string
+      required:
+        - client_id
+        - address_id
+        - payment_method
+        - delivery_method
+        - payment_status
+        - order_status
+    OrderSearchResult:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pageCount:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+
+    Category:
+      allOf:
+        - $ref: '#/components/schemas/CategoryProperties'
+        - type: object
+          properties:
+            id:
+              type: integer
+    CategoryProperties:
+      properties:
+        title:
+          type: integer
+      required:
+        - title
+    CategorySearchResult:
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
         pageCount:
           type: integer
         pageNumber:
