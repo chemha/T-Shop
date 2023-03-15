@@ -33,6 +33,10 @@ public class ClientService {
         return clientRepository.findById(id).orElseThrow(() -> new RuntimeException("No client found by specified ID"));
     }
 
+    public ClientEntity findByEmail(String email) {
+        return clientRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No client found by specified email"));
+    }
+
     @Transactional
     public ClientDto get(final Integer id) {
         final ClientEntity entity = loadEntity(id);

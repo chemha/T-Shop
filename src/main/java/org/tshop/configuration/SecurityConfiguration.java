@@ -20,9 +20,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/clients").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
+                .and().httpBasic()
+                .and().formLogin().loginPage("/client/login")
+                .permitAll();
     }
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
