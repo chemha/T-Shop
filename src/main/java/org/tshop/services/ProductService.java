@@ -15,6 +15,7 @@ import org.tshop.entities.ClientAddressEntity;
 import org.tshop.entities.ProductEntity;
 import org.tshop.mappers.ClientMapper;
 import org.tshop.mappers.ProductMapper;
+import org.tshop.repositories.CategoryRepository;
 import org.tshop.repositories.ProductRepository;
 
 import javax.transaction.Transactional;
@@ -27,9 +28,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductMapper mapper;
 
-    private ProductEntity loadEntity(Integer id) {
+    public ProductEntity loadEntity(Integer id) {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("No product found by specified ID"));
     }
 
@@ -42,14 +44,15 @@ public class ProductService {
     @Transactional
     public ProductDto create(final ProductPropertiesDto properties) {
         final ProductEntity entity = mapper.createEntity(properties);
+        entity.setCategory(categoryRepository.findById(properties.getCategoryId()).orElseThrow(() -> new RuntimeException("No category found by specified ID")));
         return mapper.createDto(productRepository.save(entity));
     }
 
     @Transactional
     public ProductDto update(final Integer id, final ProductPropertiesDto properties) {
         final ProductEntity entity = loadEntity(id);
-
         mapper.updateEntity(entity, properties);
+        entity.setCategory(categoryRepository.findById(properties.getCategoryId()).orElseThrow(() -> new RuntimeException("No category found by specified ID")));
         ProductEntity updatedEntity = productRepository.save(entity);
 
         return mapper.createDto(updatedEntity);
@@ -71,5 +74,9 @@ public class ProductService {
         searchResult.setPageNumber(pageNumber);
         searchResult.setPageSize(pageSize);
         return searchResult;
+    }
+
+    public List<ProductEntity> findAll() {
+        return productRepository.findAll();
     }
 }

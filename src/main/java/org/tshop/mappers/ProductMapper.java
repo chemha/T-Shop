@@ -1,5 +1,6 @@
 package org.tshop.mappers;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.tshop.dto.ProductDto;
@@ -14,4 +15,5 @@ public interface ProductMapper {
     ProductEntity createEntity(ProductPropertiesDto dto);
 
     void updateEntity(@MappingTarget ProductEntity entity, ProductPropertiesDto dto);
+
 }

@@ -14,8 +14,6 @@ import org.tshop.entities.ClientEntity;
 import org.tshop.services.ClientService;
 
 import javax.servlet.http.HttpSession;
-import java.security.Principal;
-import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,10 +27,18 @@ public class ClientController implements ClientsApi {
     }
 
     @PostMapping("/login")
-    public String access(final ClientEntity client, final HttpSession session) {
+    public String singIn(final ClientEntity client, final HttpSession session) {
         ClientEntity clientEntity = service.findByEmail(client.getEmail());
-        session.setAttribute("id", clientEntity.getId());
+
+        session.setAttribute("userId", clientEntity.getId());
         session.setAttribute("admin", clientEntity.getAdmin());
+        session.setAttribute("userName", clientEntity.getName());
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
         return "redirect:/";
     }
 
@@ -43,14 +49,14 @@ public class ClientController implements ClientsApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<Void> createClient(@RequestBody final ClientPropertiesDto properties) {
-        service.create(properties);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<ClientDto> createClient(@RequestBody ClientPropertiesDto properties) {
+        final ClientDto dto = service.create(properties);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Override
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable final Integer id) {
+    public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
@@ -58,21 +64,21 @@ public class ClientController implements ClientsApi {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<ClientDto> getClient(@PathVariable final Integer id) {
+    public ResponseEntity<ClientDto> getClient(@PathVariable Integer id) {
         ClientDto dto = service.get(id);
         return ResponseEntity.ok(dto);
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<ClientSearchResultDto> getClientSearchResult(final Integer pageNumber, final Integer pageSize) {
+    public ResponseEntity<ClientSearchResultDto> getClientSearchResult( Integer pageNumber, Integer pageSize) {
         ClientSearchResultDto dto = service.getSearchResult(pageNumber, pageSize);
         return ResponseEntity.ok().body(dto);
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<ClientDto> updateClient(@PathVariable final Integer id, final ClientPropertiesDto properties) {
+    public ResponseEntity<ClientDto> updateClient(@PathVariable Integer id, ClientPropertiesDto properties) {
         final ClientDto dto = service.update(id, properties);
         return ResponseEntity.ok().body(dto);
     }

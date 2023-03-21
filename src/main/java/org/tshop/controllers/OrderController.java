@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tshop.api.OrdersApi;
+import org.tshop.dto.ClientDto;
 import org.tshop.dto.OrderDto;
 import org.tshop.dto.OrderPropertiesDto;
 import org.tshop.dto.OrderSearchResultDto;
@@ -18,9 +19,9 @@ public class OrderController implements OrdersApi {
     private final OrderService service;
 
     @Override
-    public ResponseEntity<Void> createOrder(OrderPropertiesDto properties) {
-        service.create(properties);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<OrderDto> createOrder(OrderPropertiesDto properties) {
+        OrderDto dto = service.create(properties);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Override

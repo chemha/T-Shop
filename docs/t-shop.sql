@@ -155,6 +155,24 @@ INSERT INTO `t-shop`.`Client`
 `admin`)
 VALUES
 (1,
+'admin',
+'admin',
+'2000-01-01',
+'admin@admin.admin',
+-- Password is admin
+'$2a$10$WmmU6.wZnniP524nKOCRy.CsHe6.k109..ezFI9OiidmsRYIR/3aW',
+true);
+
+INSERT INTO `t-shop`.`Client`
+(`id`,
+`name`,
+`surname`,
+`birthdate`,
+`email`,
+`password`,
+`admin`)
+VALUES
+(2,
 'test',
 'test',
 '2000-01-01',

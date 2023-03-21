@@ -64,6 +64,10 @@ paths:
       responses:
         '201':
           description: The new created client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
   /clients/{id}:
     get:
       summary: Get the existing client by its ID
@@ -169,6 +173,10 @@ paths:
       responses:
         '201':
           description: The new created address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientAddress'
   /client-addresses/{id}:
     get:
       summary: Get the existing client address by its ID
@@ -274,6 +282,10 @@ paths:
       responses:
         '201':
           description: The new created product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
   /products/{id}:
     get:
       summary: Get the existing product by its ID
@@ -379,6 +391,10 @@ paths:
       responses:
         '201':
           description: The new created good
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Good'
   /goods/{id}:
     get:
       summary: Get the existing good by its ID
@@ -484,6 +500,10 @@ paths:
       responses:
         '201':
           description: The new created order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
   /orders/{id}:
     get:
       summary: Get the existing order by its ID
@@ -589,6 +609,10 @@ paths:
       responses:
         '201':
           description: The new created category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
   /categories/{id}:
     get:
       summary: Get the existing category by its ID

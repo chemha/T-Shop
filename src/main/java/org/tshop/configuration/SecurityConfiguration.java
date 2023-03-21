@@ -16,13 +16,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/", "/clients").permitAll()
-                .and().httpBasic()
-                .and().formLogin().loginPage("/client/login")
-                .permitAll();
+                .csrf().disable()
+                .authorizeRequests().anyRequest().permitAll();
     }
 
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

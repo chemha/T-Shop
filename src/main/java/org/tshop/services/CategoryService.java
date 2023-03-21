@@ -10,6 +10,7 @@ import org.tshop.dto.CategoryDto;
 import org.tshop.dto.CategoryPropertiesDto;
 import org.tshop.dto.CategorySearchResultDto;
 import org.tshop.entities.CategoryEntity;
+import org.tshop.entities.ProductEntity;
 import org.tshop.mappers.CategoryMapper;
 import org.tshop.repositories.CategoryRepository;
 
@@ -22,7 +23,7 @@ public class CategoryService {
     private final CategoryRepository repository;
     private final CategoryMapper mapper;
 
-    private CategoryEntity loadEntity(Integer id) {
+    public CategoryEntity loadEntity(Integer id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("No product found by specified ID"));
     }
 
@@ -64,5 +65,9 @@ public class CategoryService {
         searchResult.setPageNumber(pageNumber);
         searchResult.setPageSize(pageSize);
         return searchResult;
+    }
+
+    public List<CategoryEntity> findAll() {
+        return repository.findAll();
     }
 }

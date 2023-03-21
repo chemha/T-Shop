@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tshop.api.GoodsApi;
+import org.tshop.dto.ClientDto;
 import org.tshop.dto.GoodDto;
 import org.tshop.dto.GoodPropertiesDto;
 import org.tshop.dto.GoodSearchResultDto;
@@ -18,9 +19,9 @@ public class GoodController implements GoodsApi {
     private final GoodService service;
 
     @Override
-    public ResponseEntity<Void> createGood(GoodPropertiesDto properties) {
-        service.create(properties);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<GoodDto> createGood(GoodPropertiesDto properties) {
+        GoodDto dto = service.create(properties);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Override

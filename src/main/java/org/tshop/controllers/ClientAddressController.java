@@ -15,9 +15,9 @@ public class ClientAddressController implements ClientAddressesApi {
     private final ClientAddressService service;
 
     @Override
-    public ResponseEntity<Void> createClientAddress(ClientAddressPropertiesDto properties) {
-        service.create(properties);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<ClientAddressDto> createClientAddress(ClientAddressPropertiesDto properties) {
+        final ClientAddressDto dto = service.create(properties);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Override
