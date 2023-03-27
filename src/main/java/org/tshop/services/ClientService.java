@@ -45,6 +45,16 @@ public class ClientService {
     }
 
     @Transactional
+    public ClientEntity changePassword(final Integer id, final String password) {
+        final ClientEntity entity = loadEntity(id);
+        entity.setPassword(encoder.encode(password));
+
+        clientRepository.save(entity);
+
+        return entity;
+    }
+
+    @Transactional
     public ClientDto create(final ClientPropertiesDto properties) {
         if (properties.getAdmin() == null) properties.setAdmin(false);
         properties.setPassword(encoder.encode(properties.getPassword()));

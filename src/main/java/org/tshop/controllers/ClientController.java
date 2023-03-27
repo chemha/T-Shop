@@ -14,24 +14,49 @@ import org.tshop.dto.ClientPropertiesDto;
 import org.tshop.dto.ClientSearchResultDto;
 import org.tshop.entities.ClientEntity;
 import org.tshop.entities.ProductEntity;
+import org.tshop.repositories.ClientRepository;
 import org.tshop.services.ClientService;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/clients")
 public class ClientController implements ClientsApi {
     private final ClientService service;
+    private final ClientRepository repository;
 
     @GetMapping("/index")
     public String index(Model model) {
         model.addAttribute("clients", service.findAll());
         return "clients/index";
+    }
+
+    @GetMapping("/profile")
+    public String profile(HttpSession session, Model model) {
+        model.addAttribute("client", service.loadEntity((Integer)session.getAttribute("userId")));
+        return "clients/profile";
+    }
+
+    @PostMapping("/edit")
+    public String edit(HttpSession session, @RequestParam String name, @RequestParam String surname, @RequestParam String birthdate, @RequestParam String email) {
+        ClientEntity client = service.loadEntity((Integer) session.getAttribute("userId"));
+        client.setName(name);
+        client.setSurname(surname);
+        client.setBirthdate(LocalDate.parse(birthdate));
+        client.setEmail(email);
+
+        repository.save(client);
+
+        return "redirect:/clients/profile";
+    }
+
+    @PostMapping("/password")
+    public String edit(HttpSession session, @RequestParam String password) {
+        service.changePassword((Integer) session.getAttribute("userId"), password);
+        return "redirect:/clients/profile";
     }
 
     @GetMapping("/login")
