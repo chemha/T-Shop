@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -32,7 +33,7 @@ public class ProductEntity {
 
     @NotNull
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    private Float price;
 
     @Size(max = 30)
     @Column(name = "brand", length = 30)
@@ -43,10 +44,10 @@ public class ProductEntity {
     private String color;
 
     @Column(name = "weight", precision = 10, scale = 2)
-    private BigDecimal weight;
+    private Float weight;
 
     @Column(name = "volume", precision = 10, scale = 2)
-    private BigDecimal volume;
+    private Float volume;
 
     @NotNull
     @Column(name = "quantity", nullable = false)
@@ -55,4 +56,22 @@ public class ProductEntity {
     @OneToMany(mappedBy = "product")
     private Set<GoodEntity> goods = new LinkedHashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof ProductEntity)) {
+            return false;
+        }
+
+        ProductEntity p = (ProductEntity) o;
+        return Objects.equals(id, p.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

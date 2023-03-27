@@ -16,6 +16,7 @@ import org.tshop.entities.ClientEntity;
 import org.tshop.mappers.ClientAddressMapper;
 import org.tshop.mappers.ClientMapper;
 import org.tshop.repositories.ClientAddressRepository;
+import org.tshop.repositories.ClientRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
@@ -29,9 +30,14 @@ import java.util.Optional;
 public class ClientAddressService {
     private final ClientAddressRepository repository;
     private final ClientAddressMapper mapper;
+    private final ClientRepository clientRepository;
 
     private ClientAddressEntity loadEntity(Integer id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("No address found by specified ID"));
+    }
+
+    public List<ClientAddressEntity> findByClientId(Integer client_id) {
+        return repository.findByClientId(client_id);
     }
 
     public ClientAddressDto get(final Integer id) {
@@ -41,15 +47,21 @@ public class ClientAddressService {
 
     public ClientAddressDto create(final ClientAddressPropertiesDto properties) {
         final ClientAddressEntity entity = mapper.createEntity(properties);
-        return mapper.createDto(repository.save(entity));
+        entity.setClient(clientRepository.findById(properties.getClientId()).orElseThrow(() -> new RuntimeException("No client found by specified ID")));
+
+        final ClientAddressDto dto = mapper.createDto(repository.save(entity));
+        dto.setClientId(properties.getClientId());
+        return dto;
     }
 
     @Transactional
     public ClientAddressDto update(final Integer id, final ClientAddressPropertiesDto properties) {
         final ClientAddressEntity entity = loadEntity(id);
         mapper.updateEntity(entity, properties);
+        entity.setClient(clientRepository.findById(properties.getClientId()).orElseThrow(() -> new RuntimeException("No client found by specified ID")));
         ClientAddressEntity updatedEntity = repository.save(entity);
-        return mapper.createDto(updatedEntity);
+        final ClientAddressDto dto = mapper.createDto(updatedEntity);
+        return dto;
     }
 
     @Transactional

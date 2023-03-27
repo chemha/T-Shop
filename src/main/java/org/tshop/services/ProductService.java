@@ -45,7 +45,11 @@ public class ProductService {
     public ProductDto create(final ProductPropertiesDto properties) {
         final ProductEntity entity = mapper.createEntity(properties);
         entity.setCategory(categoryRepository.findById(properties.getCategoryId()).orElseThrow(() -> new RuntimeException("No category found by specified ID")));
-        return mapper.createDto(productRepository.save(entity));
+
+        final ProductDto dto = mapper.createDto(productRepository.save(entity));
+        dto.setId(properties.getCategoryId());
+
+        return dto;
     }
 
     @Transactional

@@ -702,7 +702,6 @@ components:
       required:
         - name
         - surname
-        - birthdate
         - email
         - password
     ClientSearchResult:
@@ -738,7 +737,7 @@ components:
         home:
           type: string
         apartment:
-          type: boolean
+          type: string
       required:
         - client_id
         - country
@@ -881,7 +880,7 @@ components:
     CategoryProperties:
       properties:
         title:
-          type: integer
+          type: string
       required:
         - title
     CategorySearchResult:

@@ -44,7 +44,7 @@
                             <label class="col-md-4 col-form-label text-md-end " for="category_id">Category:</label>
                             <div class="col-md-6">
                                 <select class="form-select" id="category_id" name="category_id" required>
-                                    <option disabled selected>
+                                    <option disabled selected value="">
                                         Select category
                                     </option>
                                     <option th:each="category: ${categories}"
@@ -150,9 +150,6 @@
         </div>
     </div>
 </div>
-
-<!-- Footer -->
-<div th:include="base_template::footer"></div>
 
 </body>
 </html>

@@ -1,5 +1,6 @@
 package org.tshop.services;
 
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,8 @@ import org.tshop.dto.OrderPropertiesDto;
 import org.tshop.dto.OrderSearchResultDto;
 import org.tshop.entities.OrderEntity;
 import org.tshop.mappers.OrderMapper;
+import org.tshop.repositories.ClientAddressRepository;
+import org.tshop.repositories.ClientRepository;
 import org.tshop.repositories.OrderRepository;
 
 import javax.transaction.Transactional;
@@ -19,11 +22,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    private final OrderRepository repository;
+    private final OrderRepository orderRepository;
+    private final ClientRepository clientRepository;
+    private final ClientAddressRepository clientAddressRepository;
+
     private final OrderMapper mapper;
 
-    private OrderEntity loadEntity(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("No product found by specified ID"));
+    public OrderEntity loadEntity(Integer id) {
+        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("No product found by specified ID"));
     }
 
     @Transactional
@@ -35,7 +41,14 @@ public class OrderService {
     @Transactional
     public OrderDto create(final OrderPropertiesDto properties) {
         final OrderEntity entity = mapper.createEntity(properties);
-        return mapper.createDto(repository.save(entity));
+        entity.setClient(clientRepository.findById(properties.getClientId()).orElseThrow(() -> new RuntimeException("No client found by specified ID")));
+        entity.setAddress(clientAddressRepository.findById(properties.getAddressId()).orElseThrow(() -> new RuntimeException("No address found by specified ID")));
+
+        final OrderDto dto = mapper.createDto(orderRepository.save(entity));
+        dto.setClientId(properties.getClientId());
+        dto.setAddressId(properties.getAddressId());
+
+        return dto;
     }
 
     @Transactional
@@ -43,7 +56,7 @@ public class OrderService {
         final OrderEntity entity = loadEntity(id);
 
         mapper.updateEntity(entity, properties);
-        OrderEntity updatedEntity = repository.save(entity);
+        OrderEntity updatedEntity = orderRepository.save(entity);
 
         return mapper.createDto(updatedEntity);
     }
@@ -51,12 +64,12 @@ public class OrderService {
     @Transactional
     public void delete(Integer id) {
         OrderEntity entity = loadEntity(id);
-        repository.delete(entity);
+        orderRepository.delete(entity);
     }
 
     public OrderSearchResultDto getSearchResult(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.ASC, "id"));
-        Page<OrderEntity> page = repository.findAll(pageable);
+        Page<OrderEntity> page = orderRepository.findAll(pageable);
         OrderSearchResultDto searchResult = new OrderSearchResultDto();
         List<OrderDto> content = page.getContent().stream().map(mapper::createDto).toList();
         searchResult.setContent(content);
@@ -64,5 +77,13 @@ public class OrderService {
         searchResult.setPageNumber(pageNumber);
         searchResult.setPageSize(pageSize);
         return searchResult;
+    }
+
+    public List<OrderEntity> findAll() {
+        return orderRepository.findAll();
+    }
+
+    public List<OrderEntity> findByClientId(Integer id) {
+        return orderRepository.findByClientId(id);
     }
 }

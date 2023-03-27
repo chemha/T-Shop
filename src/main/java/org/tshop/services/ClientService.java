@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.tshop.dto.ClientDto;
 import org.tshop.dto.ClientPropertiesDto;
 import org.tshop.dto.ClientSearchResultDto;
+import org.tshop.entities.CategoryEntity;
 import org.tshop.entities.ClientEntity;
 import org.tshop.entities.ClientAddressEntity;
 import org.tshop.mappers.ClientMapper;
@@ -29,7 +30,7 @@ public class ClientService {
     private final ClientMapper mapper;
     private final BCryptPasswordEncoder encoder;
 
-    private ClientEntity loadEntity(Integer id) {
+    public ClientEntity loadEntity(Integer id) {
         return clientRepository.findById(id).orElseThrow(() -> new RuntimeException("No client found by specified ID"));
     }
 
@@ -56,6 +57,8 @@ public class ClientService {
     @Transactional
     public ClientDto update(final Integer id, final ClientPropertiesDto properties) {
         if (properties.getAdmin() == null) properties.setAdmin(false);
+        properties.setPassword(encoder.encode(properties.getPassword()));
+
         final ClientEntity entity = loadEntity(id);
 
         mapper.updateEntity(entity, properties);
@@ -91,5 +94,9 @@ public class ClientService {
         searchResult.setPageNumber(pageNumber);
         searchResult.setPageSize(pageSize);
         return searchResult;
+    }
+
+    public List<ClientEntity> findAll() {
+        return clientRepository.findAll();
     }
 }

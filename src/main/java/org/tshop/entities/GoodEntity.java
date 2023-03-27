@@ -27,6 +27,6 @@ public class GoodEntity {
     private ProductEntity product;
 
     @Column(name = "quantity", columnDefinition = "INT UNSIGNED")
-    private Long quantity;
+    private Integer quantity;
 
 }
