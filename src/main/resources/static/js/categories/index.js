@@ -4,6 +4,7 @@ function productDeletion(id) {
             type: "DELETE",
             success: function(response) {
             alert("Deletion successful!");
+            window.location.href = "/categories/index";
         },
             error: function(e) {
             alert("Deletion failed!");

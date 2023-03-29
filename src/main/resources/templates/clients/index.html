@@ -69,7 +69,10 @@
                 <td><span th:text="${client.surname}"></span></td>
                 <td><span th:text="${client.birthdate}"></span></td>
                 <td><span th:text="${client.email}"></span></td>
-                <td><span th:text="${client.admin}"></span></td>
+                <td>
+                    <i th:if="${client.admin}" class="bi bi-check-square-fill"></i>
+                    <i th:unless="${client.admin}" class="bi bi-x-square-fill"></i>
+                </td>
                 <td>
                     <button class="btn btn-warning" id="editBtn"
                             th:data-id="${client.id}"

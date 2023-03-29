@@ -59,7 +59,6 @@
                 <th scope="col">Delivery method</th>
                 <th scope="col">Payment status</th>
                 <th scope="col">Orders status</th>
-                <th scope="col">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -69,12 +68,6 @@
                 <td><span th:text="${order.deliveryMethod}"></span></td>
                 <td><span th:text="${order.paymentStatus}"></span></td>
                 <td><span th:text="${order.orderStatus}"></span></td>
-
-                <td>
-                    <button class="btn btn-primary" id="delBtn">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </td>
             </tr>
             </tbody>
         </table>

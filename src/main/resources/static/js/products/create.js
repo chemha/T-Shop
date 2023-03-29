@@ -2,18 +2,22 @@ $(window).on("load", () => {
   $("#create").submit(function(event) {
     event.preventDefault();
 
+    let weight = parseFloat($("#weight").val());
+    let volume = parseFloat($("#volume").val());
+
+    if (weight == null || isNaN(weight)) weight = 0;
+    if (volume == null || isNaN(volume)) volume = 0;
+
     const formData = {
       "category_id": parseInt($("#category_id").val()),
       "title": $("#title").val(),
       "price": parseFloat($("#price").val()),
       "brand": $("#brand").val(),
       "color": $("#color").val(),
-      "weight": parseFloat($("#weight").val()),
-      "volume": parseFloat($("#volume").val()),
+      "weight": weight,
+      "volume": volume,
       "quantity": parseInt($("#quantity").val())
     };
-
-    console.log(formData);
 
     $.ajax({
       url: "/products",
