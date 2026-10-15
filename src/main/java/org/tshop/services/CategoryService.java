@@ -24,7 +24,7 @@ public class CategoryService {
     private final CategoryMapper mapper;
 
     public CategoryEntity loadEntity(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("No product found by specified ID"));
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("No category found by specified ID"));
     }
 
     @Transactional

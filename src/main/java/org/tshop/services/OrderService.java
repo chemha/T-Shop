@@ -1,6 +1,5 @@
 package org.tshop.services;
 
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +28,7 @@ public class OrderService {
     private final OrderMapper mapper;
 
     public OrderEntity loadEntity(Integer id) {
-        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("No product found by specified ID"));
+        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("No order found by specified ID"));
     }
 
     @Transactional

@@ -1,8 +1,6 @@
 package org.tshop.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Interceptor;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
