@@ -3,10 +3,8 @@ package org.tshop.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tshop.api.GoodsApi;
-import org.tshop.dto.ClientDto;
 import org.tshop.dto.GoodDto;
 import org.tshop.dto.GoodPropertiesDto;
 import org.tshop.dto.GoodSearchResultDto;
@@ -14,7 +12,6 @@ import org.tshop.services.GoodService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/client-addresses")
 public class GoodController implements GoodsApi {
     private final GoodService service;
 

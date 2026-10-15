@@ -37,12 +37,14 @@ public class ClientAddressController implements ClientAddressesApi {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}")
     @Override
     public ResponseEntity<ClientAddressDto> getClientAddress(Integer id) {
         ClientAddressDto dto = service.get(id);
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping
     @Override
     public ResponseEntity<ClientAddressSearchResultDto> getClientAddressSearchResult(Integer pageNumber, Integer pageSize) {
         ClientAddressSearchResultDto dto = service.getSearchResult(pageNumber, pageSize);

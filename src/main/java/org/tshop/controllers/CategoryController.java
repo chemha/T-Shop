@@ -11,28 +11,16 @@ import org.tshop.dto.CategoryDto;
 import org.tshop.dto.CategoryPropertiesDto;
 import org.tshop.dto.CategorySearchResultDto;
 import org.tshop.services.CategoryService;
-import org.tshop.services.CategoryService;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController implements CategoriesApi {
     private final CategoryService service;
-    @GetMapping("/{id}/edit")
-    public String edit(@PathVariable Integer id, Model model) {
-        model.addAttribute("category", service.loadEntity(id));
-        return "categories/edit";
-    }
-
     @GetMapping("/index")
     public String index(Model model) {
         model.addAttribute("categories", service.findAll());
         return "categories/index";
-    }
-
-    @GetMapping("/create")
-    public String edit(Model model) {
-        return "categories/create";
     }
 
     @Override
@@ -50,6 +38,7 @@ public class CategoryController implements CategoriesApi {
     }
 
     @Override
+    @GetMapping("/{id}")
     public ResponseEntity<CategoryDto> getCategory(Integer id) {
         CategoryDto dto = service.get(id);
         return ResponseEntity.ok(dto);

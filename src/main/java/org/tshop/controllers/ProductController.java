@@ -48,6 +48,7 @@ public class ProductController implements ProductsApi {
     }
 
     @Override
+    @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProduct(Integer id) {
         ProductDto dto = productService.get(id);
         return ResponseEntity.ok(dto);
