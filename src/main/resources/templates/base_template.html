@@ -31,7 +31,9 @@
                         <div class="dropdown-menu dropdown-menu-end bg-dark"
                              aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item text-white bg-dark" th:href="@{/clients/profile}">Profile</a>
-                            <a class="dropdown-item text-white bg-dark" th:href="@{/clients/logout}">Log out</a>
+                            <form th:action="@{/clients/logout}" method="post">
+                                <button type="submit" class="dropdown-item text-white bg-dark">Log out</button>
+                            </form>
                         </div>
                     </li>
                 </ul>

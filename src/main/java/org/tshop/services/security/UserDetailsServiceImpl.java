@@ -1,6 +1,8 @@
 package org.tshop.services.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +12,7 @@ import org.tshop.entities.ClientEntity;
 import org.tshop.repositories.ClientRepository;
 
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -21,6 +24,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         ClientEntity client = clientRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        return new User(client.getEmail(), client.getPassword(), Collections.emptyList());
+        List<GrantedAuthority> authorities = Boolean.TRUE.equals(client.getAdmin())
+                ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                : Collections.emptyList();
+
+        return new User(client.getEmail(), client.getPassword(), authorities);
     }
 }

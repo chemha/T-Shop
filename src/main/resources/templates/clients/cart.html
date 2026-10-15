@@ -23,6 +23,7 @@
 
     <!-- JQuery core JS -->
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/js/csrf.js}"></script>
 
     <!-- Bootstrap core JS -->
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
@@ -73,7 +74,7 @@
                 <td>
                     <div class="row">
                         <div class="col">
-                            <form action="/modifyCart" method="post">
+                            <form th:action="@{/modifyCart}" method="post">
                                 <div class="d-flex align-items-center">
                                     <input name="productId" th:value="${product.key.id}" type="hidden">
                                     <input class="form-control mr-2" min="1" name="cartQuantity"
@@ -85,7 +86,7 @@
                             </form>
                         </div>
                         <div class="col">
-                            <form action="/removeCart" method="post">
+                            <form th:action="@{/removeCart}" method="post">
                                 <input name="productId" th:value="${product.key.id}" type="hidden">
                                 <button class="btn btn-danger" type="submit">
                                     <i class="bi bi-trash"></i>
@@ -109,7 +110,7 @@
                 <h1 class="modal-title fs-5" id="createModalLabel">Placing order</h1>
                 <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
             </div>
-            <form id="createForm" method="post" action="/orders/create">
+            <form id="createForm" method="post" th:action="@{/orders/create}">
                 <div class="modal-body">
                     <div class="container">
                         <div class="row row mb-3">

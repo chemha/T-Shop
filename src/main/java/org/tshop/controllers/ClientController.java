@@ -1,25 +1,20 @@
 package org.tshop.controllers;
 
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.tshop.api.ClientsApi;
 import org.tshop.dto.ClientDto;
 import org.tshop.dto.ClientPropertiesDto;
 import org.tshop.dto.ClientSearchResultDto;
 import org.tshop.entities.ClientEntity;
-import org.tshop.entities.ProductEntity;
 import org.tshop.repositories.ClientRepository;
 import org.tshop.services.ClientService;
 
@@ -32,7 +27,6 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/clients")
 public class ClientController implements ClientsApi {
-    @Autowired
     private final ClientService service;
     private final ClientRepository repository;
     private final Logger logger = LoggerFactory.getLogger(ClientController.class);
@@ -78,30 +72,7 @@ public class ClientController implements ClientsApi {
         return "clients/login";
     }
 
-    @PostMapping("/login")
-    public String singIn(final ClientEntity client, final HttpSession session) {
-        ClientEntity clientEntity = service.findByEmail(client.getEmail());
-
-        session.setAttribute("userId", clientEntity.getId());
-        session.setAttribute("admin", clientEntity.getAdmin());
-        session.setAttribute("userName", clientEntity.getName());
-
-        /*
-        Authentication authentication = new UsernamePasswordAuthenticationToken(clientEntity, null, null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        */
-
-        logger.info("Client with email {} has logged in", client.getEmail());
-
-        return "redirect:/";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.setAttribute("userId", null);
-        session.setAttribute("admin", null);
-        return "redirect:/";
-    }
+    // POST /clients/login and /clients/logout are handled by Spring Security (see SecurityConfiguration)
 
     @GetMapping("/register")
     public String register() {
@@ -111,6 +82,10 @@ public class ClientController implements ClientsApi {
     @Override
     @PostMapping
     public ResponseEntity<ClientDto> createClient(@RequestBody ClientPropertiesDto properties) {
+        // Only an admin may create other admins; public registration always creates regular clients
+        Object isAdmin = RequestContextHolder.currentRequestAttributes().getAttribute("admin", RequestAttributes.SCOPE_SESSION);
+        if (!Boolean.TRUE.equals(isAdmin)) properties.setAdmin(false);
+
         final ClientDto dto = service.create(properties);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }

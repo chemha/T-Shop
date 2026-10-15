@@ -23,6 +23,7 @@
 
     <!-- JQuery core JS -->
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/js/csrf.js}"></script>
 
     <!-- Bootstrap core JS -->
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
@@ -81,7 +82,7 @@
                 <td>
                     <div class="row">
                         <div class="col">
-                            <form method="post" action="/addCart">
+                            <form method="post" th:action="@{/addCart}">
                                 <input name="productId" id="productId" type="hidden" th:value="${product.id}">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-cart"></i>

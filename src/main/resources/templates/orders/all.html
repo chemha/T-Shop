@@ -23,6 +23,7 @@
 
     <!-- JQuery core JS -->
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/js/csrf.js}"></script>
 
     <!-- Bootstrap core JS -->
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
@@ -71,7 +72,7 @@
                 <td><span th:text="${order.orderStatus}"></span></td>
 
                 <td>
-                    <form action="/orders/setStatus" method="post">
+                    <form th:action="@{/orders/setStatus}" method="post">
                         <div class="d-flex align-items-center">
                             <input name="id" th:value="${order.id}" type="hidden">
                             <select class="form-select" id="status" name="status" required>

@@ -28,7 +28,7 @@ function confirmDeletion(id) {
 function openEditModal(elem) {
     const editModal = new bootstrap.Modal("#editModal");
 
-    $("#editModalLabel").html("Changing password of: " + elem.dataset.name + " " + elem.dataset.surname);
+    $("#editModalLabel").text("Changing password of: " + elem.dataset.name + " " + elem.dataset.surname);
     $("#editFormId").val(elem.dataset.id);
     $("#editFormName").val(elem.dataset.name);
     $("#editFormSurname").val(elem.dataset.surname);

@@ -34,7 +34,7 @@ function openEditModal(elem) {
     const id = elem.dataset.id;
     const title = elem.dataset.title;
 
-    editModalLabel.html("Editing: " + title);
+    editModalLabel.text("Editing: " + title);
     editFormId.val(id);
     editFormTitle.val(title);
 
