@@ -66,10 +66,14 @@ public class ClientService {
 
     @Transactional
     public ClientDto update(final Integer id, final ClientPropertiesDto properties) {
-        if (properties.getAdmin() == null) properties.setAdmin(false);
-        properties.setPassword(encoder.encode(properties.getPassword()));
-
         final ClientEntity entity = loadEntity(id);
+
+        if (properties.getAdmin() == null) properties.setAdmin(false);
+        if (properties.getPassword() == null || properties.getPassword().isBlank()) {
+            properties.setPassword(entity.getPassword());
+        } else {
+            properties.setPassword(encoder.encode(properties.getPassword()));
+        }
 
         mapper.updateEntity(entity, properties);
         ClientEntity updatedEntity = clientRepository.save(entity);

@@ -1,13 +1,12 @@
 package org.tshop.controllers;
 
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.criterion.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.tshop.api.OrdersApi;
 import org.tshop.dto.*;
 import org.tshop.entities.OrderEntity;
@@ -53,19 +52,25 @@ public class OrderController implements OrdersApi {
         return "redirect:/orders/all";
     }
 
-    @GetMapping("{id}/view")
-    public String view(Model model, HttpSession session) {
-        final Integer clientId = (Integer) session.getAttribute("userId");
-        model.addAttribute("orders", orderService.findByClientId(clientId));
-
-        return "orders/view";
-    }
-
-
     @PostMapping("/create")
-    public String placeOrder(@RequestParam Integer addressId, @RequestParam String payment, @RequestParam String delivery, HttpSession session) {
+    public String placeOrder(@RequestParam Integer addressId, @RequestParam String payment, @RequestParam String delivery, HttpSession session, RedirectAttributes redirectAttributes) {
         Map<ProductEntity, Integer> cart = (LinkedHashMap<ProductEntity, Integer>) session.getAttribute("cart");
         final Integer clientId = (Integer) session.getAttribute("userId");
+
+        if (cart == null || cart.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Your cart is empty");
+            return "redirect:/cart";
+        }
+
+        // The products stored in the session may be outdated, so check the current stock before ordering
+        for (Map.Entry<ProductEntity, Integer> entry : cart.entrySet()) {
+            ProductEntity product = productService.loadEntity(entry.getKey().getId());
+            if (entry.getValue() > product.getQuantity()) {
+                redirectAttributes.addFlashAttribute("error", "There isn't enough stock of " + product.getTitle());
+                return "redirect:/cart";
+            }
+        }
+
         GoodPropertiesDto goodPropertiesDto;
         ProductPropertiesDto productPropertiesDto;
         final OrderPropertiesDto orderPropertiesDto = new OrderPropertiesDto();
@@ -80,6 +85,7 @@ public class OrderController implements OrdersApi {
         OrderDto createdOrder = orderService.create(orderPropertiesDto);
 
         for (Map.Entry<ProductEntity, Integer> entry : cart.entrySet()) {
+            final ProductEntity product = productService.loadEntity(entry.getKey().getId());
             goodPropertiesDto = new GoodPropertiesDto();
 
             goodPropertiesDto.setOrderId(createdOrder.getId());
@@ -89,16 +95,16 @@ public class OrderController implements OrdersApi {
             goodService.create(goodPropertiesDto);
 
             productPropertiesDto = new ProductPropertiesDto();
-            productPropertiesDto.setTitle(entry.getKey().getTitle());
-            productPropertiesDto.setCategoryId(entry.getKey().getCategory().getId());
-            productPropertiesDto.setQuantity(entry.getKey().getQuantity() - entry.getValue());
-            productPropertiesDto.setBrand(entry.getKey().getBrand());
-            productPropertiesDto.setPrice(entry.getKey().getPrice());
-            productPropertiesDto.setVolume(entry.getKey().getVolume());
-            productPropertiesDto.setWeight(entry.getKey().getWeight());
-            productPropertiesDto.setColor(entry.getKey().getColor());
+            productPropertiesDto.setTitle(product.getTitle());
+            productPropertiesDto.setCategoryId(product.getCategory().getId());
+            productPropertiesDto.setQuantity(product.getQuantity() - entry.getValue());
+            productPropertiesDto.setBrand(product.getBrand());
+            productPropertiesDto.setPrice(product.getPrice());
+            productPropertiesDto.setVolume(product.getVolume());
+            productPropertiesDto.setWeight(product.getWeight());
+            productPropertiesDto.setColor(product.getColor());
 
-            productService.update(entry.getKey().getId(), productPropertiesDto);
+            productService.update(product.getId(), productPropertiesDto);
         }
 
         session.setAttribute("cart", new LinkedHashMap<ProductEntity, Integer>());
@@ -107,30 +113,35 @@ public class OrderController implements OrdersApi {
     }
 
     @Override
+    @PostMapping
     public ResponseEntity<OrderDto> createOrder(OrderPropertiesDto properties) {
         OrderDto dto = orderService.create(properties);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Override
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(Integer id) {
         orderService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @Override
+    @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrder(Integer id) {
         OrderDto dto = orderService.get(id);
         return ResponseEntity.ok(dto);
     }
 
     @Override
+    @GetMapping
     public ResponseEntity<OrderSearchResultDto> getOrderSearchResult(Integer pageNumber, Integer pageSize) {
         OrderSearchResultDto dto = orderService.getSearchResult(pageNumber, pageSize);
         return ResponseEntity.ok().body(dto);
     }
 
     @Override
+    @PutMapping("/{id}")
     public ResponseEntity<OrderDto> updateOrder(Integer id, OrderPropertiesDto properties) {
         final OrderDto dto = orderService.update(id, properties);
         return ResponseEntity.ok().body(dto);
