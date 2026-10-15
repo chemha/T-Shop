@@ -260,21 +260,21 @@ VALUES
 
 INSERT INTO `t-shop`.`Client` (`name`, `surname`, `birthdate`, `email`, `password`, `admin`)
 VALUES
-('John', 'Doe', '1990-01-01', 'john.doe@example.com', 'password', 0),
-('Jane', 'Doe', '1992-05-10', 'jane.doe@example.com', 'password', 0),
-('Mike', 'Smith', '1985-12-25', 'mike.smith@example.com', 'password', 0),
-('Samantha', 'Johnson', '1998-07-20', 'samantha.johnson@example.com', 'password', 0),
-('David', 'Brown', '1995-09-15', 'david.brown@example.com', 'password', 0),
-('Sarah', 'Jones', '1994-03-12', 'sarah.jones@example.com', 'password', 0),
-('Robert', 'Lee', '1988-11-07', 'robert.lee@example.com', 'password', 0),
-('Emily', 'Wilson', '2000-02-18', 'emily.wilson@example.com', 'password', 0),
-('Benjamin', 'Taylor', '1997-06-30', 'benjamin.taylor@example.com', 'password', 0),
-('Oliver', 'Clark', '1991-09-23', 'oliver.clark@example.com', 'password', 0),
-('Lucy', 'Hall', '1996-12-04', 'lucy.hall@example.com', 'password', 0),
-('Max', 'Harris', '1993-08-08', 'max.harris@example.com', 'password', 0),
-('Lily', 'Young', '1999-04-29', 'lily.young@example.com', 'password', 0),
-('Ethan', 'Wright', '1990-07-16', 'ethan.wright@example.com', 'password', 0),
-('Ava', 'King', '1998-05-02', 'ava.king@example.com', 'password', 0);
+('John', 'Doe', '1990-01-01', 'john.doe@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Jane', 'Doe', '1992-05-10', 'jane.doe@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Mike', 'Smith', '1985-12-25', 'mike.smith@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Samantha', 'Johnson', '1998-07-20', 'samantha.johnson@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('David', 'Brown', '1995-09-15', 'david.brown@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Sarah', 'Jones', '1994-03-12', 'sarah.jones@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Robert', 'Lee', '1988-11-07', 'robert.lee@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Emily', 'Wilson', '2000-02-18', 'emily.wilson@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Benjamin', 'Taylor', '1997-06-30', 'benjamin.taylor@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Oliver', 'Clark', '1991-09-23', 'oliver.clark@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Lucy', 'Hall', '1996-12-04', 'lucy.hall@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Max', 'Harris', '1993-08-08', 'max.harris@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Lily', 'Young', '1999-04-29', 'lily.young@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Ethan', 'Wright', '1990-07-16', 'ethan.wright@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0),
+('Ava', 'King', '1998-05-02', 'ava.king@example.com', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 0);
 
 INSERT INTO `t-shop`.`ClientAddress` (`client_id`, `country`, `postal_code`, `street`, `home`, `apartment`)
 VALUES
