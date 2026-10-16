@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: tshop
+      POSTGRES_USER: tshop
+      POSTGRES_PASSWORD: tshop
+    ports:
+      - "5432"
+    volumes:
+      - tshop-data:/var/lib/postgresql/data
+
+volumes:
+  tshop-data:

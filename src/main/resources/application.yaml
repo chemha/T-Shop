@@ -1,0 +1,20 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: tshop
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    # Never let a view trigger lazy loading: every query must happen inside a service
+    open-in-view: false
+    hibernate:
+      # Flyway owns the schema; Hibernate only checks that the entities match it
+      ddl-auto: validate
+  flyway:
+    # db/migration holds the schema, db/demo the sample data (left out in the prod profile)
+    locations: classpath:db/migration,classpath:db/demo
+  # Locally, spring-boot-docker-compose starts compose.yaml and wires the datasource,
+  # so no connection settings are needed here
