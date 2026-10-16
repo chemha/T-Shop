@@ -467,6 +467,33 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /me/cart/merge:
+    post:
+      tags: [ Cart ]
+      operationId: mergeCart
+      summary: Add the items of a guest cart after logging in
+      description: |
+        Visitors can fill a cart before logging in; the client keeps it and sends it here right
+        after login. Quantities are added to what the customer's cart already has, limited to the
+        available stock. Products that no longer exist or are out of stock are skipped.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartMergeRequest'
+      responses:
+        '200':
+          description: The merged cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /me/cart/items/{productId}:
     parameters:
       - $ref: '#/components/parameters/ProductId'
@@ -1188,6 +1215,28 @@ components:
       type: object
       required: [ quantity ]
       properties:
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+
+    CartMergeRequest:
+      type: object
+      required: [ items ]
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/CartMergeItem'
+
+    CartMergeItem:
+      type: object
+      required: [ productId, quantity ]
+      properties:
+        productId:
+          type: integer
+          format: int64
         quantity:
           type: integer
           minimum: 1

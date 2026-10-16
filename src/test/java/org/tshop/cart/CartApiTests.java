@@ -105,6 +105,48 @@ class CartApiTests {
         assertThat(api.get(bob, "/api/v1/me/cart")).bodyJson().extractingPath("$.items").asArray().isEmpty();
     }
 
+    @Test
+    void guestCartIsAddedToTheCustomerCartAfterLogin() {
+        Account ana = accounts.customer();
+        Product mouse = catalog.product("10.00", 10);
+        Product cable = catalog.product("2.00", 10);
+        setItem(ana, mouse, 1); // already in her cart from an earlier visit
+
+        MvcTestResult cart = merge(ana, """
+                {"items": [{"productId": %d, "quantity": 2}, {"productId": %d, "quantity": 3}]}"""
+                .formatted(mouse.getId(), cable.getId()));
+
+        assertThat(cart).hasStatusOk()
+                .bodyJson().extractingPath("$.items[*].quantity").asArray().containsExactly(3, 3);
+        assertThat(cart).bodyJson().extractingPath("$.total").isEqualTo(36.0);
+    }
+
+    @Test
+    void mergeKeepsWhatIsAvailableInsteadOfFailing() {
+        // The visitor can't fix anything at this point, so nothing is rejected
+        Account ana = accounts.customer();
+        Product lastTwo = catalog.product("10.00", 2);
+        Product soldOut = catalog.product("10.00", 0);
+
+        MvcTestResult cart = merge(ana, """
+                {"items": [{"productId": %d, "quantity": 5}, {"productId": %d, "quantity": 1},
+                           {"productId": 999999, "quantity": 1}]}""".formatted(lastTwo.getId(), soldOut.getId()));
+
+        assertThat(cart).hasStatusOk()
+                .bodyJson().extractingPath("$.items[*].productId").asArray().containsExactly(lastTwo.getId().intValue());
+        assertThat(cart).bodyJson().extractingPath("$.items[0].quantity").isEqualTo(2);
+    }
+
+    @Test
+    void mergeNeedsALoggedInCustomer() {
+        assertThat(api.post(null, """
+                {"items": []}""", "/api/v1/me/cart/merge")).hasStatus(HttpStatus.UNAUTHORIZED);
+    }
+
+    private MvcTestResult merge(Account account, String json) {
+        return api.post(account, json, "/api/v1/me/cart/merge");
+    }
+
     private MvcTestResult setItem(Account account, Product product, int quantity) {
         return api.put(account, """
                 {"quantity": %d}""".formatted(quantity), "/api/v1/me/cart/items/{id}", product.getId());

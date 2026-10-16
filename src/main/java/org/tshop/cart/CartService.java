@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @Service
 public class CartService {
 
+    /** Same limit as CartItemRequest.quantity in openapi.yaml. */
+    static final int MAX_QUANTITY = 99;
+
     private final CartItemRepository items;
     private final ProductRepository products;
 
@@ -60,6 +63,37 @@ public class CartService {
         items.findById(new CartItemId(customerId, productId)).ifPresentOrElse(
                 item -> item.changeQuantity(quantity),
                 () -> items.save(new CartItem(customerId, productId, quantity)));
+        return get(customerId);
+    }
+
+    public record GuestItem(Long productId, int quantity) {
+    }
+
+    /**
+     * Adds the cart a visitor filled before logging in. Unlike {@link #setItem}, nothing is
+     * rejected: the visitor can't fix anything at this point, so quantities are capped at the
+     * stock and unavailable products are skipped. The cart then shows what was kept.
+     */
+    @Transactional
+    public CartView merge(Long customerId, List<GuestItem> guestItems) {
+        Map<Long, Integer> requested = guestItems.stream()
+                .collect(Collectors.toMap(GuestItem::productId, GuestItem::quantity, Integer::sum));
+        Map<Long, CartItem> existing = items.findByIdCustomerIdOrderByAddedAtAsc(customerId).stream()
+                .collect(Collectors.toMap(CartItem::getProductId, Function.identity()));
+
+        for (Product product : products.findAllById(requested.keySet())) {
+            CartItem current = existing.get(product.getId());
+            int wanted = requested.get(product.getId()) + (current == null ? 0 : current.getQuantity());
+            int quantity = Math.min(Math.min(wanted, MAX_QUANTITY), product.getStock());
+            if (quantity <= 0) {
+                continue;
+            }
+            if (current == null) {
+                items.save(new CartItem(customerId, product.getId(), quantity));
+            } else {
+                current.changeQuantity(quantity);
+            }
+        }
         return get(customerId);
     }
 
