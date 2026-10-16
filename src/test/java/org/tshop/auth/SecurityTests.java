@@ -125,6 +125,15 @@ class SecurityTests {
     }
 
     @Test
+    void healthChecksArePublic() {
+        assertThat(mvc.get().uri("/actuator/health")).hasStatusOk()
+                .bodyJson().extractingPath("$.status").isEqualTo("UP");
+        assertThat(mvc.get().uri("/actuator/health/readiness")).hasStatusOk();
+        assertThat(mvc.get().uri("/actuator/info")).hasStatusOk()
+                .bodyJson().extractingPath("$.build.artifact").isEqualTo("tshop");
+    }
+
+    @Test
     void pathsOutsideTheApiAreDenied() {
         assertThat(mvc.get().uri("/actuator/env")).hasStatus(HttpStatus.UNAUTHORIZED);
     }

@@ -10,6 +10,13 @@ spring:
     # Demo data is only loaded outside production
     locations: classpath:db/migration
 
+logging:
+  structured:
+    format:
+      # One JSON object per line (Elastic Common Schema), ready for a log aggregator.
+      # Locally the usual human-readable format is kept
+      console: ecs
+
 tshop:
   jwt:
     # Required in production: without them the application refuses to start, instead of

@@ -36,6 +36,8 @@ class SecurityConfig {
                         // Documentation
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/openapi.yaml").permitAll()
                         .requestMatchers("/error").permitAll()
+                        // Health checks (only health and info are exposed, see application.yaml)
+                        .requestMatchers("/actuator/health/**", "/actuator/info").permitAll()
                         // Public API
                         .requestMatchers(HttpMethod.POST, API + "/auth/register", API + "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, API + "/products", API + "/products/*", API + "/categories").permitAll()

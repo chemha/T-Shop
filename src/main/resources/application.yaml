@@ -23,6 +23,22 @@ spring:
   # Locally, spring-boot-docker-compose starts compose.yaml and wires the datasource,
   # so no connection settings are needed here
 
+management:
+  endpoints:
+    web:
+      exposure:
+        # Only what a load balancer or orchestrator needs. Everything else (env, beans, heapdump...)
+        # can reveal secrets and stays off
+        include: health, info
+  endpoint:
+    health:
+      # /actuator/health/liveness and /actuator/health/readiness, as Kubernetes expects
+      probes:
+        enabled: true
+  info:
+    build:
+      enabled: true
+
 springdoc:
   # Contract-first: Swagger UI shows openapi.yaml itself instead of a spec generated from the code
   swagger-ui:
