@@ -88,6 +88,25 @@ public class Order {
         total = total.add(item.subtotal());
     }
 
+    /**
+     * Moves the order to its next status and updates the payment accordingly: cards are charged
+     * when the order is confirmed, cash is collected on delivery, and a paid order that is
+     * cancelled is refunded. Returning the stock of a cancelled order is up to the caller, which
+     * has access to the products.
+     */
+    public void moveTo(OrderStatus next) {
+        if (!status.canMoveTo(next)) {
+            throw new InvalidOrderTransitionException(status, next);
+        }
+        status = next;
+        paymentStatus = switch (next) {
+            case CONFIRMED -> paymentMethod == PaymentMethod.CARD ? PaymentStatus.PAID : paymentStatus;
+            case DELIVERED -> PaymentStatus.PAID;
+            case CANCELLED -> paymentStatus == PaymentStatus.PAID ? PaymentStatus.REFUNDED : paymentStatus;
+            case PENDING, SHIPPED -> paymentStatus;
+        };
+    }
+
     public Long getId() {
         return id;
     }
