@@ -17,11 +17,14 @@ class TShopApplicationTests {
 
     @Test
     void migrationsCreateTheSchemaAndLoadTheDemoData() {
-        long products = jdbc.sql("SELECT count(*) FROM product").query(Long.class).single();
+        // The database is shared with the other tests, which add their own rows, so this checks
+        // for specific demo rows instead of counting
         String adminRole = jdbc.sql("SELECT role FROM customer WHERE email = 'admin@admin.admin'")
                 .query(String.class).single();
+        String laptopCategory = jdbc.sql("SELECT c.name FROM product p JOIN category c ON c.id = p.category_id WHERE p.name = 'Dell XPS 13'")
+                .query(String.class).single();
 
-        assertThat(products).isEqualTo(13);
         assertThat(adminRole).isEqualTo("ADMIN");
+        assertThat(laptopCategory).isEqualTo("Laptops");
     }
 }

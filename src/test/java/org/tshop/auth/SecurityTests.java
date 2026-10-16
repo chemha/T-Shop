@@ -120,9 +120,8 @@ class SecurityTests {
     void catalogueAndDocumentationArePublic() {
         assertThat(mvc.get().uri("/openapi.yaml")).hasStatusOk();
         assertThat(mvc.get().uri("/swagger-ui/index.html")).hasStatusOk();
-        // The catalogue endpoints come in the next phase: for now it's enough that security lets
-        // the request through (404 = no handler yet, instead of 401)
-        assertThat(mvc.get().uri("/api/v1/categories")).hasStatus(HttpStatus.NOT_FOUND);
+        assertThat(mvc.get().uri("/api/v1/categories")).hasStatusOk();
+        assertThat(mvc.get().uri("/api/v1/products")).hasStatusOk();
     }
 
     @Test
