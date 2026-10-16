@@ -167,7 +167,25 @@ input[aria-invalid='true'] {
   margin-bottom: 1rem;
 }
 
-.filters input {
+.filters {
+  align-items: flex-end;
+}
+
+/* Label text above its field */
+.filter {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.filter input,
+.filter select {
+  font-weight: normal;
+}
+
+.filter-search {
   flex: 1 1 220px;
 }
 

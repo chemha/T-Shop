@@ -49,32 +49,36 @@ export function CataloguePage() {
     <section>
       <h1>Catalogue</h1>
       <div className="filters">
-        <input
-          key={q} // reset the text when the URL changes (e.g. back button)
-          type="search"
-          placeholder="Search by name or brand"
-          aria-label="Search"
-          defaultValue={q}
-          onKeyDown={(event) => event.key === 'Enter' && update({ q: event.currentTarget.value })}
-        />
-        <select
-          aria-label="Category"
-          value={categoryId ?? ''}
-          onChange={(event) => update({ category: event.target.value })}
-        >
-          <option value="">All categories</option>
-          {categories.data?.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-        <select aria-label="Sort" value={sort} onChange={(event) => update({ sort: event.target.value })}>
-          <option value="name">Name</option>
-          <option value="price_asc">Price: low to high</option>
-          <option value="price_desc">Price: high to low</option>
-          <option value="newest">Newest</option>
-        </select>
+        <label className="filter filter-search">
+          Search
+          <input
+            key={q} // reset the text when the URL changes (e.g. back button)
+            type="search"
+            placeholder="Name or brand, then Enter"
+            defaultValue={q}
+            onKeyDown={(event) => event.key === 'Enter' && update({ q: event.currentTarget.value })}
+          />
+        </label>
+        <label className="filter">
+          Category
+          <select value={categoryId ?? ''} onChange={(event) => update({ category: event.target.value })}>
+            <option value="">All categories</option>
+            {categories.data?.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="filter">
+          Sort by
+          <select value={sort} onChange={(event) => update({ sort: event.target.value })}>
+            <option value="name">Name</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="newest">Newest</option>
+          </select>
+        </label>
       </div>
 
       <ErrorMessage error={products.error} />
