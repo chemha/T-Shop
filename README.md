@@ -10,6 +10,11 @@ cohort), originally a Spring Boot 2.7 + Thymeleaf + MySQL app built in under a m
 is on the [`master`](https://github.com/chemha/TShop/tree/master) branch. This version keeps the
 domain and fixes what the first one got wrong: [what changed and why](#what-changed-from-v1).
 
+> **About this rewrite.** v1 is my original course project. v2 was rebuilt with the help of an
+> AI coding assistant: I set the goals and made the main choices (API-first design, PostgreSQL,
+> letting visitors fill a cart before logging in), tested the result and caught bugs along the
+> way. The reasoning behind each design decision is in the [ADRs](docs/adr/README.md).
+
 ## Try it
 
 **Option A: everything in Docker** (no JDK needed)
