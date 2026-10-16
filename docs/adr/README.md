@@ -9,3 +9,4 @@ Short notes on the decisions that shaped the design: the context, what was decid
 | [0003](0003-optimistic-locking-for-stock.md) | Optimistic locking for stock, with retries |
 | [0004](0004-orders-keep-a-snapshot.md) | Orders keep a snapshot of prices and address |
 | [0005](0005-package-by-feature.md) | Package by feature, references between aggregates by id |
+| [0006](0006-guest-cart-in-the-browser.md) | Guest cart in the browser, merged at login |

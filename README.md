@@ -42,7 +42,7 @@ A full walkthrough (log in, fill the cart, check out, confirm the order as admin
 ### Web client
 
 A small React client in [`frontend/`](frontend) covers the shopping flow: catalogue with search
-and filters, login and registration, cart and checkout, order history, and an admin page to move
+and filters, a cart that works before logging in, login and registration, checkout, order history, and an admin page to move
 orders through their statuses. With the backend running (option B above) and Node 24:
 
 ```bash
@@ -57,8 +57,11 @@ needed.
 
 ## Features
 
-**Customers:** register and log in, manage their profile, password and addresses, browse and
-search the catalogue, keep a persistent cart, place orders and cancel them while pending.
+**Visitors:** browse and search the catalogue, fill a cart and see it without an account. Logging
+in is only needed to place the order, and the guest cart is then merged into the customer's cart.
+
+**Customers:** register and log in, manage their profile, password and addresses, keep a cart
+saved on the server, place orders and cancel them while pending.
 
 **Admins:** manage categories and products, list customers, change roles, follow orders through
 their lifecycle (`PENDING → CONFIRMED → SHIPPED → DELIVERED`, or `CANCELLED`).
@@ -130,6 +133,7 @@ Each one is explained, with the alternatives and trade-offs, in an
 3. [Optimistic locking for stock, with retries](docs/adr/0003-optimistic-locking-for-stock.md)
 4. [Orders keep a snapshot of prices and address](docs/adr/0004-orders-keep-a-snapshot.md)
 5. [Package by feature, references between aggregates by id](docs/adr/0005-package-by-feature.md)
+6. [Guest cart in the browser, merged at login](docs/adr/0006-guest-cart-in-the-browser.md)
 
 ## What changed from v1
 
@@ -139,7 +143,7 @@ Each one is explained, with the alternatives and trade-offs, in an
 | Order created in the controller, step by step | `OrderService.placeOrder`, all or nothing | A failure halfway left partial orders |
 | Prices as `Float` | `NUMERIC` / `BigDecimal` | Floating point can't represent cents exactly |
 | Order lines pointed to the live product | Name and price copied into the order | Changing a price rewrote past orders |
-| Cart of JPA entities in the HTTP session | Cart table, priced on every read | Stale prices and detached entities |
+| Cart of JPA entities in the HTTP session | Cart table, priced on every read; guest cart kept by the client and merged at login | Stale prices and detached entities, without losing the guest cart |
 | Any logged-in user could reach any address by id | Lookups by id **and** owner | Insecure direct object reference (IDOR) |
 | Every error was a 400 with the internal message | RFC 9457 with the right status | Correct semantics, no internal details leaked |
 | Status values as free text | Enums and a state machine | Invalid transitions are impossible |
