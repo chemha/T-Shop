@@ -18,3 +18,8 @@ spring:
     locations: classpath:db/migration,classpath:db/demo
   # Locally, spring-boot-docker-compose starts compose.yaml and wires the datasource,
   # so no connection settings are needed here
+
+springdoc:
+  # Contract-first: Swagger UI shows openapi.yaml itself instead of a spec generated from the code
+  swagger-ui:
+    url: /openapi.yaml
