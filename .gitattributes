@@ -1,0 +1,13 @@
+# Store text files with LF in the repository
+* text=auto eol=lf
+
+# Windows scripts need CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.docx binary
+*.mwb binary
+*.mwb.bak binary
