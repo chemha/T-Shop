@@ -39,6 +39,22 @@ click **Authorize** and paste the `accessToken`.
 A full walkthrough (log in, fill the cart, check out, confirm the order as admin) is in
 [`docs/http/tshop.http`](docs/http/tshop.http), runnable from VS Code or IntelliJ.
 
+### Web client
+
+A small React client in [`frontend/`](frontend) covers the shopping flow: catalogue with search
+and filters, login and registration, cart and checkout, order history, and an admin page to move
+orders through their statuses. With the backend running (option B above) and Node 24:
+
+```bash
+cd frontend
+npm install
+npm run dev    # http://localhost:5173
+```
+
+Its TypeScript types are generated from the same `openapi.yaml`, so a contract change that breaks
+the client fails its type check in CI. Vite forwards `/api` to the backend, so no CORS setup is
+needed.
+
 ## Features
 
 **Customers:** register and log in, manage their profile, password and addresses, browse and
@@ -70,6 +86,7 @@ their lifecycle (`PENDING → CONFIRMED → SHIPPED → DELIVERED`, or `CANCELLE
 | Mapping | MapStruct |
 | Tests | JUnit, AssertJ, MockMvcTester, Testcontainers |
 | Build and delivery | Maven, Docker (multi-stage, layered jar), Docker Compose, GitHub Actions |
+| Web client | React 19, TypeScript, Vite, React Router, TanStack Query, openapi-fetch, Vitest |
 
 ## Architecture
 
