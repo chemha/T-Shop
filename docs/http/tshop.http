@@ -1,0 +1,66 @@
+### T-Shop API walkthrough
+### Run the requests in order with the VS Code "REST Client" extension (or IntelliJ's HTTP client,
+### adapting the token capture). Start the app first: ./mvnw spring-boot:run
+
+@baseUrl = http://localhost:9000/api/v1
+
+### 1. Browse the catalogue (public)
+GET {{baseUrl}}/products?q=dell&sort=price_asc
+
+### 2. Log in as the demo customer
+# @name customerLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{"email": "test@test.test", "password": "test"}
+
+### 3. Add an address
+@customerToken = {{customerLogin.response.body.accessToken}}
+# @name address
+POST {{baseUrl}}/me/addresses
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{"country": "Spain", "postalCode": "28001", "street": "Gran Via", "houseNumber": "1"}
+
+### 4. Put two units of product 1 in the cart
+PUT {{baseUrl}}/me/cart/items/1
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{"quantity": 2}
+
+### 5. See the cart
+GET {{baseUrl}}/me/cart
+Authorization: Bearer {{customerToken}}
+
+### 6. Place the order
+# @name order
+POST {{baseUrl}}/me/orders
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{"addressId": {{address.response.body.id}}, "paymentMethod": "CARD", "deliveryMethod": "STANDARD"}
+
+### 7. Log in as admin
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{"email": "admin@admin.admin", "password": "admin"}
+
+### 8. Confirm the order (the card payment becomes PAID)
+@adminToken = {{adminLogin.response.body.accessToken}}
+PUT {{baseUrl}}/admin/orders/{{order.response.body.id}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{"status": "CONFIRMED"}
+
+### 9. The customer sees the new status
+GET {{baseUrl}}/me/orders
+Authorization: Bearer {{customerToken}}
+
+### 10. A customer can't use admin endpoints (403)
+GET {{baseUrl}}/admin/customers
+Authorization: Bearer {{customerToken}}
