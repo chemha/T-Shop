@@ -9,3 +9,10 @@ spring:
   flyway:
     # Demo data is only loaded outside production
     locations: classpath:db/migration
+
+tshop:
+  jwt:
+    # Required in production: without them the application refuses to start, instead of
+    # silently generating keys that change on every restart
+    public-key: ${JWT_PUBLIC_KEY}
+    private-key: ${JWT_PRIVATE_KEY}
