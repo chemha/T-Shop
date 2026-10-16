@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { api, call, type Schemas } from '../api/client'
 import { useAuth } from '../auth/useAuth'
@@ -32,7 +32,6 @@ export function CartPage() {
   return (
     <section>
       <h1>Cart</h1>
-      <ErrorMessage error={cart.updateError} />
       <table className="table">
         <thead>
           <tr>
@@ -62,6 +61,8 @@ export function CartPage() {
           </tr>
         </tfoot>
       </table>
+      {/* Below the table, so the table doesn't jump when the message appears or goes away */}
+      <ErrorMessage error={cart.updateError} />
       {session ? (
         <Checkout />
       ) : (
@@ -96,7 +97,12 @@ function CartRow({
       <td>{formatPrice(line.unitPrice)}</td>
       <td>
         {/* The key resets the field whenever the cart's quantity changes (saved, corrected, other tab) */}
-        <QuantityInput key={line.quantity} label={`Quantity of ${line.productName}`} quantity={line.quantity} onChange={onQuantity} />
+        <QuantityInput
+          key={line.quantity}
+          label={`Quantity of ${line.productName}`}
+          quantity={line.quantity}
+          onChange={onQuantity}
+        />
       </td>
       <td>{formatPrice(line.subtotal)}</td>
       <td>
@@ -109,20 +115,40 @@ function CartRow({
 }
 
 /**
- * Applies the new quantity a moment after the user stops changing it (arrows or typing), so
- * typing "12" sends one update instead of two. Invalid values (empty, 0, over 99) are ignored.
+ * Applies the new quantity when the user presses Enter, or a moment after they stop changing it
+ * (arrows or typing), so typing "12" sends one update instead of two.
  */
-function QuantityInput({ label, quantity, onChange }: { label: string; quantity: number; onChange: (quantity: number) => void }) {
+function QuantityInput({
+  label,
+  quantity,
+  onChange,
+}: {
+  label: string
+  quantity: number
+  onChange: (quantity: number) => void
+}) {
   const [value, setValue] = useState(String(quantity))
+  // The same number is never sent twice in a row: if the server rejects it (not enough stock),
+  // re-rendering the page to show the error must not send it again
+  const lastSent = useRef(quantity)
 
-  useEffect(() => {
+  function apply() {
     const next = Number(value)
-    if (!Number.isInteger(next) || next < 1 || next > 99 || next === quantity) {
+    if (!Number.isInteger(next) || next < 1 || next > 99 || next === lastSent.current) {
       return
     }
-    const timer = setTimeout(() => onChange(next), 400)
+    lastSent.current = next
+    onChange(next)
+  }
+
+  // An Effect Event always sees the latest props and state but isn't a dependency of the effect:
+  // the timer restarts only when the value changes, not every time the parent re-renders
+  const applyAfterDelay = useEffectEvent(apply)
+
+  useEffect(() => {
+    const timer = setTimeout(applyAfterDelay, 400)
     return () => clearTimeout(timer) // a newer change cancels the pending one
-  }, [value, quantity, onChange])
+  }, [value])
 
   return (
     <input
@@ -132,6 +158,7 @@ function QuantityInput({ label, quantity, onChange }: { label: string; quantity:
       aria-label={label}
       value={value}
       onChange={(event) => setValue(event.target.value)}
+      onKeyDown={(event) => event.key === 'Enter' && apply()}
     />
   )
 }
@@ -172,7 +199,12 @@ function Checkout() {
       <h2>Checkout</h2>
       <label>
         Ship to
-        <select name="addressId" required value={addressId ?? addresses.data?.[0]?.id ?? ''} onChange={(event) => setAddressId(Number(event.target.value))}>
+        <select
+          name="addressId"
+          required
+          value={addressId ?? addresses.data?.[0]?.id ?? ''}
+          onChange={(event) => setAddressId(Number(event.target.value))}
+        >
           {addresses.data?.map((address) => (
             <option key={address.id} value={address.id}>
               {[address.street, address.houseNumber, address.apartment, address.postalCode, address.country]

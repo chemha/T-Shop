@@ -58,4 +58,52 @@ describe('App', () => {
     await waitFor(() => expect(screen.getAllByText('€3,299.97')).toHaveLength(2))
     expect(JSON.parse(localStorage.getItem('tshop.guestCart')!)).toEqual([{ productId: 3, quantity: 3 }])
   })
+
+  it('applies the quantity at once when pressing Enter', async () => {
+    localStorage.setItem('tshop.guestCart', JSON.stringify([{ productId: 3, quantity: 1 }]))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify(product), { headers: { 'Content-Type': 'application/json' } })),
+    )
+    renderAt('/cart')
+
+    const quantity = await screen.findByLabelText('Quantity of Dell XPS 13')
+    await userEvent.clear(quantity)
+    await userEvent.type(quantity, '4{Enter}')
+
+    // No waiting for the delay
+    expect(JSON.parse(localStorage.getItem('tshop.guestCart')!)).toEqual([{ productId: 3, quantity: 4 }])
+  })
+
+  it('sends a rejected quantity only once', async () => {
+    // Logged-in customer whose cart is on the server
+    const payload = btoa(JSON.stringify({ sub: '7', roles: ['CUSTOMER'], exp: Math.floor(Date.now() / 1000) + 3600 }))
+    sessionStorage.setItem('tshop.token', `header.${payload.replace(/=+$/, '')}.signature`)
+    const cart = { items: [{ productId: 3, productName: 'Dell XPS 13', unitPrice: 1099.99, quantity: 1, subtotal: 1099.99, inStock: true }], total: 1099.99 }
+    const puts: Request[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (request: Request) => {
+        if (request.method === 'PUT') {
+          puts.push(request)
+          return new Response(JSON.stringify({ status: 409, detail: "Only 10 unit(s) of 'Dell XPS 13' left, 50 requested" }), {
+            status: 409,
+            headers: { 'Content-Type': 'application/problem+json' },
+          })
+        }
+        const body = request.url.endsWith('/me/addresses') ? [] : cart
+        return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+      }),
+    )
+    renderAt('/cart')
+
+    const quantity = await screen.findByLabelText('Quantity of Dell XPS 13')
+    await userEvent.clear(quantity)
+    await userEvent.type(quantity, '50')
+
+    expect(await screen.findByText(/Only 10 unit\(s\)/)).toBeDefined()
+    // Showing the error re-renders the page; before the fix that sent the same request every 400 ms
+    await new Promise((resolve) => setTimeout(resolve, 1300))
+    expect(puts).toHaveLength(1)
+  })
 })
