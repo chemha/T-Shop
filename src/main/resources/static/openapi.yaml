@@ -1,0 +1,1320 @@
+openapi: 3.1.0
+info:
+  title: T-Shop API
+  version: 2.0.0
+  description: |
+    REST API for a small online store: catalogue, shopping cart, checkout and order management.
+
+    **Authentication**: call `POST /auth/login` to get a JWT, then click **Authorize** and paste it.
+    Demo accounts: `admin@admin.admin` / `admin` (admin) and `test@test.test` / `test` (customer).
+
+    Errors follow [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) (`application/problem+json`).
+servers:
+  - url: /api/v1
+
+security:
+  - bearerAuth: [ ]
+
+tags:
+  - name: Auth
+    description: Registration and login
+  - name: Account
+    description: The logged-in customer's profile
+  - name: Addresses
+    description: The logged-in customer's delivery addresses
+  - name: Categories
+    description: Product categories. Reading is public, changes need the ADMIN role
+  - name: Products
+    description: Product catalogue. Reading is public, changes need the ADMIN role
+  - name: Cart
+    description: The logged-in customer's shopping cart
+  - name: Orders
+    description: Checkout and the logged-in customer's orders
+  - name: Admin
+    description: Customer and order management (ADMIN role)
+
+paths:
+  # ---------------------------------------------------------------- Auth
+  /auth/register:
+    post:
+      tags: [ Auth ]
+      operationId: register
+      summary: Create a customer account
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      tags: [ Auth ]
+      operationId: login
+      summary: Exchange email and password for an access token
+      security: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Credentials are valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------- Account
+  /me:
+    get:
+      tags: [ Account ]
+      operationId: getProfile
+      summary: Get the logged-in customer's profile
+      responses:
+        '200':
+          description: The profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      tags: [ Account ]
+      operationId: updateProfile
+      summary: Update the logged-in customer's profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: The updated profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /me/password:
+    put:
+      tags: [ Account ]
+      operationId: changePassword
+      summary: Change the logged-in customer's password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '204':
+          description: Password changed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------- Addresses
+  /me/addresses:
+    get:
+      tags: [ Addresses ]
+      operationId: listAddresses
+      summary: List the logged-in customer's addresses
+      responses:
+        '200':
+          description: The addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [ Addresses ]
+      operationId: createAddress
+      summary: Add an address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressDetails'
+      responses:
+        '201':
+          description: Address created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /me/addresses/{addressId}:
+    parameters:
+      - $ref: '#/components/parameters/AddressId'
+    put:
+      tags: [ Addresses ]
+      operationId: updateAddress
+      summary: Update one of the logged-in customer's addresses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressDetails'
+      responses:
+        '200':
+          description: The updated address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [ Addresses ]
+      operationId: deleteAddress
+      summary: Delete one of the logged-in customer's addresses
+      responses:
+        '204':
+          description: Address deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------- Categories
+  /categories:
+    get:
+      tags: [ Categories ]
+      operationId: listCategories
+      summary: List all categories
+      security: [ ]
+      responses:
+        '200':
+          description: The categories, sorted by name
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      tags: [ Categories ]
+      operationId: createCategory
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /categories/{categoryId}:
+    parameters:
+      - $ref: '#/components/parameters/CategoryId'
+    put:
+      tags: [ Categories ]
+      operationId: updateCategory
+      summary: Rename a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+      responses:
+        '200':
+          description: The updated category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags: [ Categories ]
+      operationId: deleteCategory
+      summary: Delete an empty category
+      responses:
+        '204':
+          description: Category deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: The category still has products
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  # ---------------------------------------------------------------- Products
+  /products:
+    get:
+      tags: [ Products ]
+      operationId: searchProducts
+      summary: Search the catalogue
+      security: [ ]
+      parameters:
+        - name: q
+          in: query
+          description: Text contained in the product name or brand (case-insensitive)
+          schema:
+            type: string
+            maxLength: 100
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [ name, price_asc, price_desc, newest ]
+            default: name
+      responses:
+        '200':
+          description: One page of products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags: [ Products ]
+      operationId: createProduct
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /products/{productId}:
+    parameters:
+      - $ref: '#/components/parameters/ProductId'
+    get:
+      tags: [ Products ]
+      operationId: getProduct
+      summary: Get a product
+      security: [ ]
+      responses:
+        '200':
+          description: The product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [ Products ]
+      operationId: updateProduct
+      summary: Update a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '200':
+          description: The updated product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags: [ Products ]
+      operationId: deleteProduct
+      summary: Delete a product
+      description: Past orders keep the product name and price.
+      responses:
+        '204':
+          description: Product deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------- Cart
+  /me/cart:
+    get:
+      tags: [ Cart ]
+      operationId: getCart
+      summary: Get the cart with current prices and stock
+      responses:
+        '200':
+          description: The cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags: [ Cart ]
+      operationId: clearCart
+      summary: Remove every item from the cart
+      responses:
+        '204':
+          description: Cart emptied
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /me/cart/items/{productId}:
+    parameters:
+      - $ref: '#/components/parameters/ProductId'
+    put:
+      tags: [ Cart ]
+      operationId: setCartItem
+      summary: Add a product to the cart or change its quantity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemRequest'
+      responses:
+        '200':
+          description: The updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Not enough stock
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    delete:
+      tags: [ Cart ]
+      operationId: removeCartItem
+      summary: Remove a product from the cart
+      responses:
+        '200':
+          description: The updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---------------------------------------------------------------- Orders
+  /me/orders:
+    get:
+      tags: [ Orders ]
+      operationId: listMyOrders
+      summary: List the logged-in customer's orders, newest first
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: One page of orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [ Orders ]
+      operationId: placeOrder
+      summary: Place an order with the contents of the cart
+      description: |
+        Checks the stock of every item, reserves it, copies the current prices and the
+        shipping address into the order and empties the cart, all in one transaction.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceOrderRequest'
+      responses:
+        '201':
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: The cart is empty or a product doesn't have enough stock
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /me/orders/{orderId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [ Orders ]
+      operationId: getMyOrder
+      summary: Get one of the logged-in customer's orders
+      responses:
+        '200':
+          description: The order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /me/orders/{orderId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [ Orders ]
+      operationId: cancelMyOrder
+      summary: Cancel a pending order
+      description: The stock is returned and, if the order was paid, the payment is refunded.
+      responses:
+        '200':
+          description: The cancelled order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: The order can no longer be cancelled
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  # ---------------------------------------------------------------- Admin
+  /admin/customers:
+    get:
+      tags: [ Admin ]
+      operationId: listCustomers
+      summary: List customers
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: One page of customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/customers/{customerId}:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    get:
+      tags: [ Admin ]
+      operationId: getCustomer
+      summary: Get a customer
+      responses:
+        '200':
+          description: The customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [ Admin ]
+      operationId: deleteCustomer
+      summary: Delete a customer without orders
+      responses:
+        '204':
+          description: Customer deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: The customer has orders, or is the admin making the request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /admin/customers/{customerId}/role:
+    parameters:
+      - $ref: '#/components/parameters/CustomerId'
+    put:
+      tags: [ Admin ]
+      operationId: changeCustomerRole
+      summary: Promote a customer to admin or demote an admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeRoleRequest'
+      responses:
+        '200':
+          description: The updated customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: An admin can't demote themselves
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /admin/orders:
+    get:
+      tags: [ Admin ]
+      operationId: listOrders
+      summary: List every order, newest first
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+      responses:
+        '200':
+          description: One page of orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/orders/{orderId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [ Admin ]
+      operationId: getOrder
+      summary: Get any order
+      responses:
+        '200':
+          description: The order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/orders/{orderId}/status:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    put:
+      tags: [ Admin ]
+      operationId: changeOrderStatus
+      summary: Move an order to its next status
+      description: |
+        Allowed transitions: `PENDING → CONFIRMED → SHIPPED → DELIVERED`, and
+        `PENDING`/`CONFIRMED → CANCELLED`. Cancelling returns the stock.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeOrderStatusRequest'
+      responses:
+        '200':
+          description: The updated order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: The transition isn't allowed
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AddressId:
+      name: addressId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    CategoryId:
+      name: categoryId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    Page:
+      name: page
+      in: query
+      description: Page number, starting at 0
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    Size:
+      name: size
+      in: query
+      description: Page size
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    BadRequest:
+      description: The request is malformed or fails validation
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    Unauthorized:
+      description: Missing, invalid or expired token, or wrong credentials
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    Forbidden:
+      description: The user doesn't have the required role
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    NotFound:
+      description: The resource doesn't exist or doesn't belong to the user
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    Conflict:
+      description: The request conflicts with the current state
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+  schemas:
+    # ------------------------------------------------------------ Errors
+    ProblemDetail:
+      type: object
+      description: RFC 9457 problem details
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        errors:
+          type: array
+          description: Field errors, only present on validation failures
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    PageMetadata:
+      type: object
+      required: [ number, size, totalElements, totalPages ]
+      properties:
+        number:
+          type: integer
+          description: Page number, starting at 0
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+
+    # ------------------------------------------------------------ Auth and customers
+    Role:
+      type: string
+      enum: [ CUSTOMER, ADMIN ]
+
+    RegisterRequest:
+      type: object
+      required: [ firstName, lastName, birthDate, email, password ]
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          minLength: 8
+          maxLength: 72
+          description: Between 8 and 72 characters (the BCrypt limit)
+
+    LoginRequest:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          maxLength: 254
+        password:
+          type: string
+          maxLength: 72
+
+    TokenResponse:
+      type: object
+      required: [ accessToken, tokenType, expiresIn ]
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          format: int64
+          description: Seconds until the token expires
+
+    Customer:
+      type: object
+      required: [ id, firstName, lastName, birthDate, email, role, createdAt ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+        createdAt:
+          type: string
+          format: date-time
+
+    CustomerPage:
+      type: object
+      required: [ content, page ]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+    UpdateProfileRequest:
+      type: object
+      required: [ firstName, lastName, birthDate, email ]
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+          maxLength: 254
+
+    ChangePasswordRequest:
+      type: object
+      required: [ currentPassword, newPassword ]
+      properties:
+        currentPassword:
+          type: string
+          maxLength: 72
+        newPassword:
+          type: string
+          minLength: 8
+          maxLength: 72
+
+    ChangeRoleRequest:
+      type: object
+      required: [ role ]
+      properties:
+        role:
+          $ref: '#/components/schemas/Role'
+
+    # ------------------------------------------------------------ Addresses
+    AddressDetails:
+      type: object
+      required: [ country, postalCode, street ]
+      properties:
+        country:
+          type: string
+          minLength: 1
+          maxLength: 60
+        postalCode:
+          type: string
+          minLength: 1
+          maxLength: 10
+        street:
+          type: string
+          minLength: 1
+          maxLength: 100
+        houseNumber:
+          type: string
+          maxLength: 50
+        apartment:
+          type: string
+          maxLength: 50
+
+    Address:
+      type: object
+      required: [ id, country, postalCode, street ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        country:
+          type: string
+        postalCode:
+          type: string
+        street:
+          type: string
+        houseNumber:
+          type: string
+        apartment:
+          type: string
+
+    # ------------------------------------------------------------ Catalogue
+    Category:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    CategoryRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    Product:
+      type: object
+      required: [ id, categoryId, categoryName, name, price, stock ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        categoryId:
+          type: integer
+          format: int64
+        categoryName:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+          example: 1099.99
+        brand:
+          type: string
+        color:
+          type: string
+        weightKg:
+          type: number
+        volumeL:
+          type: number
+        stock:
+          type: integer
+
+    ProductPage:
+      type: object
+      required: [ content, page ]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+    ProductRequest:
+      type: object
+      required: [ categoryId, name, price, stock ]
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        price:
+          type: number
+          minimum: 0
+        brand:
+          type: string
+          maxLength: 50
+        color:
+          type: string
+          maxLength: 50
+        weightKg:
+          type: number
+          minimum: 0
+        volumeL:
+          type: number
+          minimum: 0
+        stock:
+          type: integer
+          minimum: 0
+
+    # ------------------------------------------------------------ Cart
+    CartItemRequest:
+      type: object
+      required: [ quantity ]
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+
+    CartItem:
+      type: object
+      required: [ productId, productName, unitPrice, quantity, subtotal, inStock ]
+      properties:
+        productId:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        unitPrice:
+          type: number
+          description: Current price of the product
+        quantity:
+          type: integer
+        subtotal:
+          type: number
+        inStock:
+          type: boolean
+          description: False when the stock has dropped below the quantity in the cart
+
+    Cart:
+      type: object
+      required: [ items, total ]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        total:
+          type: number
+
+    # ------------------------------------------------------------ Orders
+    OrderStatus:
+      type: string
+      enum: [ PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED ]
+
+    PaymentStatus:
+      type: string
+      enum: [ PENDING, PAID, REFUNDED ]
+
+    PaymentMethod:
+      type: string
+      enum: [ CASH, CARD ]
+
+    DeliveryMethod:
+      type: string
+      enum: [ STANDARD, PREMIUM ]
+
+    PlaceOrderRequest:
+      type: object
+      required: [ addressId, paymentMethod, deliveryMethod ]
+      properties:
+        addressId:
+          type: integer
+          format: int64
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        deliveryMethod:
+          $ref: '#/components/schemas/DeliveryMethod'
+
+    ChangeOrderStatusRequest:
+      type: object
+      required: [ status ]
+      properties:
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+
+    OrderItem:
+      type: object
+      required: [ productName, unitPrice, quantity, subtotal ]
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: Missing if the product has since been deleted
+        productName:
+          type: string
+        unitPrice:
+          type: number
+          description: Price at the time of the order
+        quantity:
+          type: integer
+        subtotal:
+          type: number
+
+    Order:
+      type: object
+      required: [ id, customerId, status, paymentMethod, paymentStatus, deliveryMethod, shippingAddress, items, total, createdAt ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        customerId:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        paymentStatus:
+          $ref: '#/components/schemas/PaymentStatus'
+        deliveryMethod:
+          $ref: '#/components/schemas/DeliveryMethod'
+        shippingAddress:
+          $ref: '#/components/schemas/AddressDetails'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        total:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    OrderPage:
+      type: object
+      required: [ content, page ]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
