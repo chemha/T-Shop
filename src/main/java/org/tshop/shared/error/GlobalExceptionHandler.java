@@ -1,5 +1,7 @@
 package org.tshop.shared.error;
 
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,6 +51,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     ProblemDetail handleInvalidField(InvalidFieldException e) {
         return validationProblem(List.of(new FieldError(e.getField(), e.getMessage())));
+    }
+
+    /**
+     * Invalid path or query parameter (e.g. size=1000 when the maximum is 100). The generated
+     * interfaces are annotated with @Validated, so these are checked by Bean Validation's method
+     * interceptor, which throws this exception instead of a Spring MVC one.
+     */
+    @ExceptionHandler
+    ProblemDetail handleConstraintViolation(ConstraintViolationException e) {
+        List<FieldError> errors = e.getConstraintViolations().stream()
+                .map(violation -> new FieldError(lastNode(violation.getPropertyPath()), violation.getMessage()))
+                .toList();
+        return validationProblem(errors);
     }
 
     @ExceptionHandler
@@ -105,6 +120,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .map(error -> new FieldError(result.getMethodParameter().getParameterName(), error.getDefaultMessage())))
                 .toList();
         return ResponseEntity.badRequest().body(validationProblem(errors));
+    }
+
+    /** "searchProducts.size" -> "size" */
+    private static String lastNode(Path path) {
+        String name = "";
+        for (Path.Node node : path) {
+            name = node.getName();
+        }
+        return name;
     }
 
     private static ProblemDetail validationProblem(List<FieldError> errors) {
