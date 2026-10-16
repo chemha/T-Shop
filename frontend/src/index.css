@@ -186,7 +186,17 @@ input[aria-invalid='true'] {
 }
 
 .filter-search {
-  flex: 1 1 220px;
+  flex: 1 1 260px;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.search-row input {
+  flex: 1;
+  min-width: 0;
 }
 
 .pagination {

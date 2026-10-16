@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router'
 import { api, call, type Schemas } from '../api/client'
 import { useCart } from '../cart/useCart'
 import { ErrorMessage } from '../components/ErrorMessage'
+import { SearchBox } from '../components/SearchBox'
 import { formatPrice } from '../format'
 
 type Sort = 'name' | 'price_asc' | 'price_desc' | 'newest'
@@ -49,16 +50,12 @@ export function CataloguePage() {
     <section>
       <h1>Catalogue</h1>
       <div className="filters">
-        <label className="filter filter-search">
-          Search
-          <input
-            key={q} // reset the text when the URL changes (e.g. back button)
-            type="search"
-            placeholder="Name or brand, then Enter"
-            defaultValue={q}
-            onKeyDown={(event) => event.key === 'Enter' && update({ q: event.currentTarget.value })}
-          />
-        </label>
+        <SearchBox
+          key={q} // reset the text when the URL changes (e.g. back button)
+          initial={q}
+          placeholder="Name or brand"
+          onSearch={(text) => update({ q: text })}
+        />
         <label className="filter">
           Category
           <select value={categoryId ?? ''} onChange={(event) => update({ category: event.target.value })}>

@@ -87,6 +87,24 @@ describe('admin pages', () => {
     expect(await put.json()).toEqual({ role: 'ADMIN' })
   })
 
+  it('filter the product list by category', async () => {
+    logInAs(1, 'ADMIN')
+    const requests = fakeApi((request) =>
+      request.url.includes('/categories')
+        ? { body: [{ id: 1, name: 'Laptops' }, { id: 2, name: 'Monitors' }] }
+        : { body: page([]) },
+    )
+    renderAt('/admin/products')
+
+    const category = await screen.findByRole('combobox', { name: 'Category' })
+    await screen.findByRole('option', { name: 'Monitors' })
+    await userEvent.selectOptions(category, 'Monitors')
+
+    await vi.waitFor(() =>
+      expect(requests.some((request) => new URL(request.url).searchParams.get('categoryId') === '2')).toBe(true),
+    )
+  })
+
   it('show why a category could not be deleted', async () => {
     logInAs(1, 'ADMIN')
     vi.stubGlobal('confirm', () => true)

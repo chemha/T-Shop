@@ -3,6 +3,7 @@ import { useState, type FormEvent, type ReactNode } from 'react'
 import { api, ApiError, call, type Schemas } from '../api/client'
 import { categoriesQuery } from '../catalog/queries'
 import { ErrorMessage } from '../components/ErrorMessage'
+import { SearchBox } from '../components/SearchBox'
 import { formatPrice } from '../format'
 
 type Product = Schemas['Product']
@@ -14,10 +15,13 @@ type Editing = null | 'new' | Product
 export function AdminProductsPage() {
   const [page, setPage] = useState(0)
   const [q, setQ] = useState('')
+  const [categoryId, setCategoryId] = useState<number>()
   const [editing, setEditing] = useState<Editing>(null)
+  const categories = useQuery(categoriesQuery)
   const products = useQuery({
-    queryKey: ['products', 'admin', { q, page }],
-    queryFn: () => call(api.GET('/products', { params: { query: { q: q || undefined, page, size: 20 } } })),
+    queryKey: ['products', 'admin', { q, categoryId, page }],
+    queryFn: () =>
+      call(api.GET('/products', { params: { query: { q: q || undefined, categoryId, page, size: 20 } } })),
     placeholderData: keepPreviousData,
   })
 
@@ -25,18 +29,29 @@ export function AdminProductsPage() {
     <section>
       <h1>Products</h1>
       <div className="filters">
-        <label className="filter filter-search">
-          Search
-          <input
-            type="search"
-            placeholder="Name or brand, then Enter"
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                setQ(event.currentTarget.value)
-                setPage(0)
-              }
+        <SearchBox
+          placeholder="Name or brand"
+          onSearch={(text) => {
+            setQ(text)
+            setPage(0)
+          }}
+        />
+        <label className="filter">
+          Category
+          <select
+            value={categoryId ?? ''}
+            onChange={(event) => {
+              setCategoryId(event.target.value ? Number(event.target.value) : undefined)
+              setPage(0)
             }}
-          />
+          >
+            <option value="">All categories</option>
+            {categories.data?.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </label>
         <button type="button" onClick={() => setEditing('new')}>
           New product
