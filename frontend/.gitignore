@@ -1,0 +1,7 @@
+node_modules
+dist
+*.local
+*.log
+
+# Generated from ../src/main/resources/static/openapi.yaml by "npm run generate:api"
+src/api/schema.d.ts
