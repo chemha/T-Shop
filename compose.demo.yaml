@@ -1,0 +1,34 @@
+# Runs the whole application in containers, no JDK needed:
+#   docker compose -f compose.demo.yaml up --build
+# Then open http://localhost:9000/swagger-ui.html
+#
+# (compose.yaml, used by ./mvnw spring-boot:run, only starts the database.)
+
+# Own project name, so these containers never replace the ones from compose.yaml
+name: tshop-demo
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: tshop
+      POSTGRES_USER: tshop
+      POSTGRES_PASSWORD: tshop
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U tshop -d tshop" ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Default profile: demo data and temporary JWT keys. Never use these settings in production
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tshop
+      SPRING_DATASOURCE_USERNAME: tshop
+      SPRING_DATASOURCE_PASSWORD: tshop
+    ports:
+      - "9000:9000"
