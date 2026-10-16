@@ -1,6 +1,8 @@
 package org.tshop.catalog;
 
-public class InsufficientStockException extends RuntimeException {
+import org.tshop.shared.error.ConflictException;
+
+public class InsufficientStockException extends ConflictException {
 
     private final Long productId;
 
