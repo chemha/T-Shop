@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { api, call, type Schemas } from '../api/client'
 import { useAuth } from '../auth/useAuth'
@@ -95,19 +95,8 @@ function CartRow({
       </td>
       <td>{formatPrice(line.unitPrice)}</td>
       <td>
-        <input
-          type="number"
-          min={1}
-          max={99}
-          aria-label={`Quantity of ${line.productName}`}
-          defaultValue={line.quantity}
-          onBlur={(event) => {
-            const quantity = Number(event.target.value)
-            if (Number.isInteger(quantity) && quantity >= 1 && quantity <= 99 && quantity !== line.quantity) {
-              onQuantity(quantity)
-            }
-          }}
-        />
+        {/* The key resets the field whenever the cart's quantity changes (saved, corrected, other tab) */}
+        <QuantityInput key={line.quantity} label={`Quantity of ${line.productName}`} quantity={line.quantity} onChange={onQuantity} />
       </td>
       <td>{formatPrice(line.subtotal)}</td>
       <td>
@@ -116,6 +105,34 @@ function CartRow({
         </button>
       </td>
     </tr>
+  )
+}
+
+/**
+ * Applies the new quantity a moment after the user stops changing it (arrows or typing), so
+ * typing "12" sends one update instead of two. Invalid values (empty, 0, over 99) are ignored.
+ */
+function QuantityInput({ label, quantity, onChange }: { label: string; quantity: number; onChange: (quantity: number) => void }) {
+  const [value, setValue] = useState(String(quantity))
+
+  useEffect(() => {
+    const next = Number(value)
+    if (!Number.isInteger(next) || next < 1 || next > 99 || next === quantity) {
+      return
+    }
+    const timer = setTimeout(() => onChange(next), 400)
+    return () => clearTimeout(timer) // a newer change cancels the pending one
+  }, [value, quantity, onChange])
+
+  return (
+    <input
+      type="number"
+      min={1}
+      max={99}
+      aria-label={label}
+      value={value}
+      onChange={(event) => setValue(event.target.value)}
+    />
   )
 }
 
