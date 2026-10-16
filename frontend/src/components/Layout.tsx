@@ -20,7 +20,8 @@ export function Layout() {
           </NavLink>
           <NavLink to="/cart">Cart{items > 0 && <span className="badge">{items}</span>}</NavLink>
           {session && <NavLink to="/orders">My orders</NavLink>}
-          {isAdmin(session) && <NavLink to="/admin/orders">Admin</NavLink>}
+          {/* Links to /admin so it stays highlighted on every admin page */}
+          {isAdmin(session) && <NavLink to="/admin">Admin</NavLink>}
           {session ? (
             <button type="button" className="link" onClick={logout}>
               Log out

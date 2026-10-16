@@ -1,5 +1,9 @@
-import { Route, Routes } from 'react-router'
+import { Navigate, Route, Routes } from 'react-router'
+import { AdminCategoriesPage } from './admin/AdminCategoriesPage'
+import { AdminCustomersPage } from './admin/AdminCustomersPage'
+import { AdminLayout } from './admin/AdminLayout'
 import { AdminOrdersPage } from './admin/AdminOrdersPage'
+import { AdminProductsPage } from './admin/AdminProductsPage'
 import { LoginPage } from './auth/LoginPage'
 import { CartPage } from './cart/CartPage'
 import { CataloguePage } from './catalog/CataloguePage'
@@ -23,14 +27,21 @@ export function App() {
             </RequireAuth>
           }
         />
+        {/* One guard for every admin page. The API checks the role again on every request */}
         <Route
-          path="admin/orders"
+          path="admin"
           element={
             <RequireAuth admin>
-              <AdminOrdersPage />
+              <AdminLayout />
             </RequireAuth>
           }
-        />
+        >
+          <Route index element={<Navigate to="orders" replace />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="customers" element={<AdminCustomersPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+        </Route>
         <Route path="*" element={<p>Page not found.</p>} />
       </Route>
     </Routes>
