@@ -1,8 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { Link, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { api, call, type Schemas } from '../api/client'
-import { useAuth } from '../auth/useAuth'
-import { cartQuery, useSetCartItem } from '../cart/queries'
+import { useCart } from '../cart/useCart'
 import { ErrorMessage } from '../components/ErrorMessage'
 import { formatPrice } from '../format'
 
@@ -108,11 +107,10 @@ export function CataloguePage() {
 }
 
 function ProductCard({ product }: { product: Schemas['Product'] }) {
-  const { session } = useAuth()
-  const addToCart = useSetCartItem()
-  // PUT sets the quantity, so adding one more needs the current one (shared, cached cart query)
-  const cart = useQuery({ ...cartQuery, enabled: session !== null })
-  const inCart = cart.data?.items.find((item) => item.productId === product.id)?.quantity ?? 0
+  // Logged in or not: visitors fill a guest cart and only log in to place the order
+  const cart = useCart()
+  // Setting a quantity replaces it, so adding one more needs the current one
+  const inCart = cart.lines.find((line) => line.productId === product.id)?.quantity ?? 0
 
   return (
     <article className="card">
@@ -121,18 +119,14 @@ function ProductCard({ product }: { product: Schemas['Product'] }) {
       <p className="muted">{[product.brand, product.color].filter(Boolean).join(' · ')}</p>
       <p className="price">{formatPrice(product.price)}</p>
       <p className="muted">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</p>
-      {session ? (
-        <button
-          type="button"
-          disabled={inCart >= product.stock || addToCart.isPending}
-          onClick={() => addToCart.mutate({ productId: product.id, quantity: inCart + 1 })}
-        >
-          {inCart > 0 ? `In cart (${inCart}) · Add one more` : 'Add to cart'}
-        </button>
-      ) : (
-        <Link to="/login">Log in to buy</Link>
-      )}
-      <ErrorMessage error={addToCart.error} />
+      <button
+        type="button"
+        disabled={inCart >= product.stock || cart.updating}
+        onClick={() => cart.setQuantity(product.id, inCart + 1)}
+      >
+        {inCart > 0 ? `In cart (${inCart}) · Add one more` : 'Add to cart'}
+      </button>
+      <ErrorMessage error={cart.updateError} />
     </article>
   )
 }

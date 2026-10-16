@@ -27,10 +27,44 @@ function respondWith(status: number, body: object) {
   return fetch
 }
 
+/** A token the client can read (only the server checks signatures). */
+function fakeToken(): string {
+  const payload = btoa(JSON.stringify({ sub: '7', roles: ['CUSTOMER'], exp: Math.floor(Date.now() / 1000) + 3600 }))
+  return `header.${payload.replace(/=+$/, '')}.signature`
+}
+
 describe('LoginPage', () => {
   afterEach(() => {
     cleanup()
     vi.unstubAllGlobals()
+    localStorage.clear()
+    sessionStorage.clear()
+  })
+
+  it('moves the guest cart to the server after logging in', async () => {
+    localStorage.setItem('tshop.guestCart', JSON.stringify([{ productId: 3, quantity: 2 }]))
+    const requests: Request[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (request: Request) => {
+        requests.push(request)
+        const body = request.url.endsWith('/auth/login')
+          ? { accessToken: fakeToken(), tokenType: 'Bearer', expiresIn: 3600 }
+          : { items: [], total: 0 }
+        return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      }),
+    )
+    renderLoginPage()
+
+    await userEvent.type(screen.getByLabelText('Email'), 'ana@example.com')
+    await userEvent.type(screen.getByLabelText('Password'), 'correct-password')
+    await userEvent.click(screen.getByRole('button', { name: 'Log in' }))
+
+    await vi.waitFor(() => expect(localStorage.getItem('tshop.guestCart')).toBeNull())
+    const merge = requests.find((request) => request.url.endsWith('/me/cart/merge'))!
+    // Sent with the token just received, so the server knows whose cart it is
+    expect(merge.headers.get('Authorization')).toBe(`Bearer ${sessionStorage.getItem('tshop.token')}`)
+    expect(await merge.json()).toEqual({ items: [{ productId: 3, quantity: 2 }] })
   })
 
   it('shows the problem detail returned by the API', async () => {

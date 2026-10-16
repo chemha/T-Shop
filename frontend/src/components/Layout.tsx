@@ -1,13 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link, NavLink, Outlet } from 'react-router'
-import { useAuth } from '../auth/useAuth'
 import { isAdmin } from '../auth/session'
-import { cartQuery } from '../cart/queries'
+import { useAuth } from '../auth/useAuth'
+import { useCart } from '../cart/useCart'
 
 export function Layout() {
   const { session, logout } = useAuth()
-  const cart = useQuery({ ...cartQuery, enabled: session !== null })
-  const items = cart.data?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0
+  const cart = useCart()
+  const items = cart.lines.reduce((sum, line) => sum + line.quantity, 0)
 
   return (
     <>
@@ -19,12 +18,8 @@ export function Layout() {
           <NavLink to="/" end>
             Catalogue
           </NavLink>
-          {session && (
-            <>
-              <NavLink to="/cart">Cart{items > 0 && <span className="badge">{items}</span>}</NavLink>
-              <NavLink to="/orders">My orders</NavLink>
-            </>
-          )}
+          <NavLink to="/cart">Cart{items > 0 && <span className="badge">{items}</span>}</NavLink>
+          {session && <NavLink to="/orders">My orders</NavLink>}
           {isAdmin(session) && <NavLink to="/admin/orders">Admin</NavLink>}
           {session ? (
             <button type="button" className="link" onClick={logout}>

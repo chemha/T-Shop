@@ -2,12 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { api, call, type Schemas } from '../api/client'
+import { useAuth } from '../auth/useAuth'
 import { ErrorMessage } from '../components/ErrorMessage'
 import { formatPrice } from '../format'
-import { cartQuery, useSetCartItem } from './queries'
+import { cartQuery } from './queries'
+import { useCart, type CartLine } from './useCart'
 
 export function CartPage() {
-  const cart = useQuery(cartQuery)
+  const { session } = useAuth()
+  const cart = useCart()
 
   if (cart.isPending) {
     return <p>Loading…</p>
@@ -15,7 +18,7 @@ export function CartPage() {
   if (cart.error) {
     return <ErrorMessage error={cart.error} />
   }
-  if (cart.data.items.length === 0) {
+  if (cart.lines.length === 0) {
     return (
       <section>
         <h1>Cart</h1>
@@ -29,6 +32,7 @@ export function CartPage() {
   return (
     <section>
       <h1>Cart</h1>
+      <ErrorMessage error={cart.updateError} />
       <table className="table">
         <thead>
           <tr>
@@ -40,57 +44,74 @@ export function CartPage() {
           </tr>
         </thead>
         <tbody>
-          {cart.data.items.map((item) => (
-            <CartLine key={item.productId} item={item} />
+          {cart.lines.map((line) => (
+            <CartRow
+              key={line.productId}
+              line={line}
+              disabled={cart.updating}
+              onQuantity={(quantity) => cart.setQuantity(line.productId, quantity)}
+              onRemove={() => cart.remove(line.productId)}
+            />
           ))}
         </tbody>
         <tfoot>
           <tr>
             <td colSpan={3}>Total</td>
-            <td className="price">{formatPrice(cart.data.total)}</td>
+            <td className="price">{formatPrice(cart.total)}</td>
             <td />
           </tr>
         </tfoot>
       </table>
-      <Checkout />
+      {session ? (
+        <Checkout />
+      ) : (
+        <p className="checkout">
+          <Link to="/login" state={{ from: '/cart' }}>
+            Log in or create an account
+          </Link>{' '}
+          to place your order. Your cart will be kept.
+        </p>
+      )}
     </section>
   )
 }
 
-function CartLine({ item }: { item: Schemas['CartItem'] }) {
-  const queryClient = useQueryClient()
-  const setItem = useSetCartItem()
-  const remove = useMutation({
-    mutationFn: () => call(api.DELETE('/me/cart/items/{productId}', { params: { path: { productId: item.productId } } })),
-    onSuccess: (cart) => queryClient.setQueryData(cartQuery.queryKey, cart),
-  })
-
+function CartRow({
+  line,
+  disabled,
+  onQuantity,
+  onRemove,
+}: {
+  line: CartLine
+  disabled: boolean
+  onQuantity: (quantity: number) => void
+  onRemove: () => void
+}) {
   return (
     <tr>
       <td>
-        {item.productName}
-        {!item.inStock && <small className="error"> Not enough stock for this quantity</small>}
-        <ErrorMessage error={setItem.error ?? remove.error} />
+        {line.productName}
+        {!line.inStock && <small className="error"> Not enough stock for this quantity</small>}
       </td>
-      <td>{formatPrice(item.unitPrice)}</td>
+      <td>{formatPrice(line.unitPrice)}</td>
       <td>
         <input
           type="number"
           min={1}
           max={99}
-          aria-label={`Quantity of ${item.productName}`}
-          defaultValue={item.quantity}
+          aria-label={`Quantity of ${line.productName}`}
+          defaultValue={line.quantity}
           onBlur={(event) => {
             const quantity = Number(event.target.value)
-            if (quantity >= 1 && quantity !== item.quantity) {
-              setItem.mutate({ productId: item.productId, quantity })
+            if (Number.isInteger(quantity) && quantity >= 1 && quantity <= 99 && quantity !== line.quantity) {
+              onQuantity(quantity)
             }
           }}
         />
       </td>
-      <td>{formatPrice(item.subtotal)}</td>
+      <td>{formatPrice(line.subtotal)}</td>
       <td>
-        <button type="button" className="link" disabled={remove.isPending} onClick={() => remove.mutate()}>
+        <button type="button" className="link" disabled={disabled} onClick={onRemove}>
           Remove
         </button>
       </td>

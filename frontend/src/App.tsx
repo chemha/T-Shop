@@ -13,14 +13,8 @@ export function App() {
       <Route element={<Layout />}>
         <Route index element={<CataloguePage />} />
         <Route path="login" element={<LoginPage />} />
-        <Route
-          path="cart"
-          element={
-            <RequireAuth>
-              <CartPage />
-            </RequireAuth>
-          }
-        />
+        {/* Public: visitors can fill and see a cart, and log in only to place the order */}
+        <Route path="cart" element={<CartPage />} />
         <Route
           path="orders"
           element={
