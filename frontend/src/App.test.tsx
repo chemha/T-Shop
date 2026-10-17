@@ -28,6 +28,19 @@ describe('App', () => {
     sessionStorage.clear()
   })
 
+  it('links to the source code on every page', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } })),
+    )
+    renderAt('/cart')
+
+    const link = await screen.findByRole('link', { name: 'Source code on GitHub' })
+    expect(link.getAttribute('href')).toBe('https://github.com/chemha/T-Shop')
+    expect(link.getAttribute('target')).toBe('_blank')
+    expect(link.getAttribute('rel')).toContain('noopener')
+  })
+
   it('shows a visitor their cart without asking them to log in', async () => {
     localStorage.setItem('tshop.guestCart', JSON.stringify([{ productId: 3, quantity: 2 }]))
     vi.stubGlobal(

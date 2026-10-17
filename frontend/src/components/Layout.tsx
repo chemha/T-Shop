@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet } from 'react-router'
 import { isAdmin } from '../auth/session'
 import { useAuth } from '../auth/useAuth'
 import { useCart } from '../cart/useCart'
+import { GitHubLink } from './GitHubLink'
 
 export function Layout() {
   const { session, logout } = useAuth()
@@ -34,6 +35,7 @@ export function Layout() {
       <main className="main">
         <Outlet />
       </main>
+      <GitHubLink />
     </>
   )
 }
