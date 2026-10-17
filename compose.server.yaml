@@ -1,0 +1,51 @@
+# Runs the demo on a small server from the images that CI publishes on every push to master.
+# Nothing is compiled on the server, so this file is all it needs:
+#
+#   curl -fsSLO https://raw.githubusercontent.com/chemha/T-Shop/master/compose.server.yaml
+#   docker compose -f compose.server.yaml up -d
+#
+# Update:      docker compose -f compose.server.yaml pull && docker compose -f compose.server.yaml up -d
+# Reset data:  docker compose -f compose.server.yaml down && docker compose -f compose.server.yaml up -d
+#
+# Demo settings, as in compose.demo.yaml: sample data with known passwords, JWT keys generated at
+# startup, and no database volume, so "down" + "up" starts again from fresh demo data.
+
+name: tshop-demo
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tshop
+      POSTGRES_USER: tshop
+      POSTGRES_PASSWORD: tshop
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U tshop -d tshop" ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  app:
+    image: ghcr.io/chemha/t-shop:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tshop
+      SPRING_DATASOURCE_USERNAME: tshop
+      SPRING_DATASOURCE_PASSWORD: tshop
+      # Small footprint for a demo with little traffic (measured: ~300 MB instead of ~500 MB):
+      # a fixed 256 MB heap whatever memory the host reports, the serial collector (least overhead
+      # for a small heap), and only the quick JIT compiler with a smaller code cache. The cost is
+      # lower peak throughput, which a demo doesn't need
+      JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -XX:ReservedCodeCacheSize=48m"
+
+  web:
+    image: ghcr.io/chemha/t-shop-web:latest
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "8080:80"

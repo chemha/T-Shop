@@ -28,6 +28,17 @@ Open the shop at **<http://localhost:8080>** and the API docs at
 web served by nginx, which forwards the API to the backend. `docker compose -f compose.demo.yaml
 down` stops it, and the next `up` starts again from fresh demo data.
 
+**On a small server** (e.g. a homelab container with 1 GB of RAM): CI publishes both images to
+GitHub Container Registry on every push to `master`, so the server only downloads and runs them.
+The demo uses about 370 MB of memory.
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/chemha/T-Shop/master/compose.server.yaml
+docker compose -f compose.server.yaml up -d
+```
+
+Update with `docker compose -f compose.server.yaml pull` followed by the same `up -d`.
+
 **Option B: run from source** (JDK 25 and Docker)
 
 ```bash

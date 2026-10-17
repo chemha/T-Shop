@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master, v2 ]
+    branches: [ master ]
   pull_request:
 
 # Cancel a running build when a newer commit arrives on the same branch
@@ -59,15 +59,32 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  # Builds the two images on every run; on master, once all tests pass, also publishes them to
+  # GitHub Container Registry so a server only has to pull them (see compose.server.yaml)
   docker:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [ build, frontend ]
+    permissions:
+      contents: read
+      packages: write
+    env:
+      # Image names must be lower case, unlike the repository name
+      APP_IMAGE: ghcr.io/chemha/t-shop
+      WEB_IMAGE: ghcr.io/chemha/t-shop-web
+      # Links the published images to this repository on GitHub
+      SOURCE: org.opencontainers.image.source=https://github.com/${{ github.repository }}
     steps:
       - uses: actions/checkout@v7
 
-      # Only checks that the images build; publishing them would need a registry
-      - name: Build backend image
-        run: docker build -t tshop:ci .
+      - name: Build images
+        run: |
+          docker build --label "$SOURCE" -t "$APP_IMAGE:latest" -t "$APP_IMAGE:${{ github.sha }}" .
+          docker build --label "$SOURCE" -f frontend/Dockerfile -t "$WEB_IMAGE:latest" -t "$WEB_IMAGE:${{ github.sha }}" .
 
-      - name: Build web image
-        run: docker build -f frontend/Dockerfile -t tshop-web:ci .
+      # "latest" for the demo server; the commit hash to go back to an exact version
+      - name: Publish images
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push --all-tags "$APP_IMAGE"
+          docker push --all-tags "$WEB_IMAGE"
