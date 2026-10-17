@@ -8,7 +8,7 @@ REST API for an online store: catalogue, shopping cart, checkout and order manag
 **[Live demo](https://t-shop.chemha.dev)** · [API docs (Swagger UI)](https://t-shop.chemha.dev/swagger-ui.html)
 
 This is a rewrite of my final project for a JavaSchool course (selected as the best project of the
-cohort), originally a Spring Boot 2.7 + Thymeleaf + MySQL app built in under a month. The original
+cohort), originally a Spring Boot 2.7 + Thymeleaf + MySQL app. The original
 is kept under the [`v1`](https://github.com/chemha/T-Shop/tree/v1) tag. This version keeps the
 domain and fixes what the first one got wrong: [what changed and why](#what-changed-from-v1).
 
