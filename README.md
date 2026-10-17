@@ -46,9 +46,10 @@ A full walkthrough (log in, fill the cart, check out, confirm the order as admin
 
 ### Web client
 
-A small React client in [`frontend/`](frontend) covers the shopping flow: catalogue with search
-and filters, a cart that works before logging in, login and registration, checkout, order history, and an admin page to move
-orders through their statuses. With the backend running (option B above) and Node 24:
+A small React client in [`frontend/`](frontend) covers the whole shop: catalogue with search
+and filters, a cart that works before logging in, login and registration, checkout and order
+history, plus admin pages for orders, customers, products and categories. With the backend running
+(option B above) and Node 24:
 
 ```bash
 cd frontend
@@ -119,7 +120,7 @@ src/main/java/org/tshop
 ├── auth        Login, JWT issuing and validation, security rules
 ├── customer    Customers, profile, addresses
 ├── catalog     Categories, products, search
-├── cart        Persistent shopping cart
+├── cart        Customer cart, guest cart merge
 ├── order       Checkout, order lifecycle
 ├── admin       Customer and order management
 └── shared      Error handling, mapping helpers
@@ -127,6 +128,114 @@ src/main/java/org/tshop
 
 Entities from different features reference each other by id, every association is lazy, and
 `open-in-view` is off, so all database access is explicit and happens inside a service.
+
+### Data model
+
+The schema is created by Flyway from
+[`V1__create_schema.sql`](src/main/resources/db/migration/V1__create_schema.sql). The v1 model
+(conceptual, logical and physical diagrams) is kept in [`docs/v1`](docs/v1) for comparison.
+
+```mermaid
+erDiagram
+    customer ||--o{ address : "has"
+    customer ||--o{ cart_item : "fills"
+    customer ||--o{ orders : "places"
+    category ||--o{ product : "groups"
+    product ||--o{ cart_item : "is in"
+    orders ||--|{ order_item : "contains"
+    product |o--o{ order_item : "was sold as"
+
+    customer {
+        bigint id PK
+        varchar first_name
+        varchar last_name
+        date birth_date
+        varchar email UK "stored in lower case"
+        varchar password_hash "BCrypt"
+        varchar role "CUSTOMER or ADMIN"
+        timestamptz created_at
+    }
+    address {
+        bigint id PK
+        bigint customer_id FK
+        varchar country
+        varchar postal_code
+        varchar street
+        varchar house_number
+        varchar apartment
+    }
+    category {
+        bigint id PK
+        varchar name UK
+    }
+    product {
+        bigint id PK
+        bigint category_id FK
+        varchar name
+        numeric price "NUMERIC(10,2)"
+        varchar brand
+        varchar color
+        numeric weight_kg
+        numeric volume_l
+        integer stock "never below 0"
+        bigint version "optimistic locking"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    cart_item {
+        bigint customer_id PK, FK
+        bigint product_id PK, FK
+        integer quantity
+        timestamptz added_at
+    }
+    orders {
+        bigint id PK
+        bigint customer_id FK
+        varchar status
+        varchar payment_method
+        varchar payment_status
+        varchar delivery_method
+        varchar shipping_country "copied from the address"
+        varchar shipping_postal_code
+        varchar shipping_street
+        varchar shipping_house_number
+        varchar shipping_apartment
+        numeric total
+        bigint version "optimistic locking"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    order_item {
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK "null if the product is deleted"
+        varchar product_name "copied at checkout"
+        numeric unit_price "copied at checkout"
+        integer quantity
+    }
+```
+
+Compared with v1: `Good` became `order_item`, the cart moved from the HTTP session to
+`cart_item`, prices are `NUMERIC` instead of `FLOAT`, the admin flag became a `role`, and orders
+copy the shipping address and the product name and price at checkout.
+
+### Order lifecycle
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> PENDING : checkout
+    PENDING --> CONFIRMED : card payment becomes PAID
+    CONFIRMED --> SHIPPED
+    SHIPPED --> DELIVERED : cash payment becomes PAID
+    PENDING --> CANCELLED : customer or admin
+    CONFIRMED --> CANCELLED : admin only
+    DELIVERED --> [*]
+    CANCELLED --> [*]
+```
+
+Cancelling returns the stock, and a paid order is marked `REFUNDED`. Any other transition is
+rejected with 409.
 
 ### Design decisions
 
