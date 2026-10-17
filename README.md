@@ -1,13 +1,13 @@
 # T-Shop
 
-[![CI](https://github.com/chemha/TShop/actions/workflows/ci.yml/badge.svg?branch=v2)](https://github.com/chemha/TShop/actions/workflows/ci.yml)
+[![CI](https://github.com/chemha/T-Shop/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/chemha/T-Shop/actions/workflows/ci.yml)
 
 REST API for an online store: catalogue, shopping cart, checkout and order management, built with
 **Java 25**, **Spring Boot 4** and **PostgreSQL**.
 
 This is a rewrite of my final project for a JavaSchool course (selected as the best project of the
 cohort), originally a Spring Boot 2.7 + Thymeleaf + MySQL app built in under a month. The original
-is on the [`master`](https://github.com/chemha/TShop/tree/master) branch. This version keeps the
+is kept under the [`v1`](https://github.com/chemha/T-Shop/tree/v1) tag. This version keeps the
 domain and fixes what the first one got wrong: [what changed and why](#what-changed-from-v1).
 
 > **About this rewrite.** v1 is my original course project. v2 was rebuilt with the help of an
