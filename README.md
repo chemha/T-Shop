@@ -5,6 +5,8 @@
 REST API for an online store: catalogue, shopping cart, checkout and order management, built with
 **Java 25**, **Spring Boot 4** and **PostgreSQL**.
 
+**[Live demo](https://t-shop.chemha.dev)** · [API docs (Swagger UI)](https://t-shop.chemha.dev/swagger-ui.html)
+
 This is a rewrite of my final project for a JavaSchool course (selected as the best project of the
 cohort), originally a Spring Boot 2.7 + Thymeleaf + MySQL app built in under a month. The original
 is kept under the [`v1`](https://github.com/chemha/T-Shop/tree/v1) tag. This version keeps the
@@ -14,6 +16,20 @@ domain and fixes what the first one got wrong: [what changed and why](#what-chan
 > AI coding assistant: I set the goals and made the main choices (API-first design, PostgreSQL,
 > letting visitors fill a cart before logging in), tested the result and caught bugs along the
 > way. The reasoning behind each design decision is in the [ADRs](docs/adr/README.md).
+
+## Live demo
+
+The shop runs at **<https://t-shop.chemha.dev>** and its API docs at
+**<https://t-shop.chemha.dev/swagger-ui.html>**. Log in with any of these accounts:
+
+| Email | Password | Role |
+|---|---|---|
+| `admin@admin.admin` | `admin` | Admin: manages products, categories, customers and orders |
+| `test@test.test` | `test` | Customer |
+| `john.doe@example.com` (and the other sample customers) | `password` | Customer |
+
+Feel free to change anything, including as admin: the demo resets to its sample data every night.
+It is self-hosted on a small home server, so it may occasionally be offline.
 
 ## Try it
 
@@ -49,14 +65,8 @@ PostgreSQL starts automatically from [`compose.yaml`](compose.yaml) and Flyway c
 and demo data. The API runs at <http://localhost:9000/swagger-ui.html>; for the web, see
 [Web client](#web-client).
 
-In Swagger UI, call `POST /auth/login` with a demo account, click **Authorize** and paste the
-`accessToken`.
-
-| Email | Password | Role |
-|---|---|---|
-| `admin@admin.admin` | `admin` | Admin |
-| `test@test.test` | `test` | Customer |
-| `john.doe@example.com` (and the other sample customers) | `password` | Customer |
+Local runs have the same [demo accounts](#live-demo). In Swagger UI, call `POST /auth/login` with
+one of them, click **Authorize** and paste the `accessToken`.
 
 A full walkthrough (log in, fill the cart, check out, confirm the order as admin) is in
 [`docs/http/tshop.http`](docs/http/tshop.http), runnable from VS Code or IntelliJ.
