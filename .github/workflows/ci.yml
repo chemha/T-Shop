@@ -65,6 +65,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Only checks that the image builds; publishing it would need a registry
-      - name: Build Docker image
+      # Only checks that the images build; publishing them would need a registry
+      - name: Build backend image
         run: docker build -t tshop:ci .
+
+      - name: Build web image
+        run: docker build -f frontend/Dockerfile -t tshop-web:ci .

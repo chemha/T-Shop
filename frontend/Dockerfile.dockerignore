@@ -1,0 +1,7 @@
+# Used instead of the root .dockerignore when building frontend/Dockerfile:
+# only the web sources and the API contract are sent to Docker
+*
+!frontend/
+frontend/node_modules
+frontend/dist
+!src/main/resources/static/openapi.yaml

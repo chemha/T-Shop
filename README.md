@@ -17,11 +17,16 @@ domain and fixes what the first one got wrong: [what changed and why](#what-chan
 
 ## Try it
 
-**Option A: everything in Docker** (no JDK needed)
+**Option A: everything in Docker** (only Docker needed)
 
 ```bash
-docker compose -f compose.demo.yaml up --build
+docker compose -f compose.demo.yaml up -d --build
 ```
+
+Open the shop at **<http://localhost:8080>** and the API docs at
+**<http://localhost:8080/swagger-ui.html>**. This is how the demo runs on a server: one port, the
+web served by nginx, which forwards the API to the backend. `docker compose -f compose.demo.yaml
+down` stops it, and the next `up` starts again from fresh demo data.
 
 **Option B: run from source** (JDK 25 and Docker)
 
@@ -30,10 +35,11 @@ docker compose -f compose.demo.yaml up --build
 ```
 
 PostgreSQL starts automatically from [`compose.yaml`](compose.yaml) and Flyway creates the schema
-and demo data.
+and demo data. The API runs at <http://localhost:9000/swagger-ui.html>; for the web, see
+[Web client](#web-client).
 
-Then open **<http://localhost:9000/swagger-ui.html>**, call `POST /auth/login` with a demo account,
-click **Authorize** and paste the `accessToken`.
+In Swagger UI, call `POST /auth/login` with a demo account, click **Authorize** and paste the
+`accessToken`.
 
 | Email | Password | Role |
 |---|---|---|
