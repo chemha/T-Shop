@@ -1,6 +1,6 @@
 # T-Shop
 
-[![CI](https://github.com/chemha/T-Shop/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/chemha/T-Shop/actions/workflows/ci.yml)
+[![CI](https://github.com/chemha/T-Shop/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/chemha/T-Shop/actions/workflows/ci.yml)
 
 REST API for an online store: catalogue, shopping cart, checkout and order management, built with
 **Java 25**, **Spring Boot 4** and **PostgreSQL**.
@@ -45,11 +45,11 @@ web served by nginx, which forwards the API to the backend. `docker compose -f c
 down` stops it, and the next `up` starts again from fresh demo data.
 
 **On a small server** (e.g. a homelab container with 1 GB of RAM): CI publishes both images to
-GitHub Container Registry on every push to `main`, so the server only downloads and runs them.
+GitHub Container Registry on every push to `master`, so the server only downloads and runs them.
 The demo uses about 370 MB of memory.
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/chemha/T-Shop/main/compose.server.yaml
+curl -fsSLO https://raw.githubusercontent.com/chemha/T-Shop/master/compose.server.yaml
 docker compose -f compose.server.yaml up -d
 ```
 
