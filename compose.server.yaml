@@ -1,7 +1,7 @@
-# Runs the demo on a small server from the images that CI publishes on every push to master.
+# Runs the demo on a small server from the images that CI publishes on every push to main.
 # Nothing is compiled on the server, so this file is all it needs:
 #
-#   curl -fsSLO https://raw.githubusercontent.com/chemha/T-Shop/master/compose.server.yaml
+#   curl -fsSLO https://raw.githubusercontent.com/chemha/T-Shop/main/compose.server.yaml
 #   docker compose -f compose.server.yaml up -d
 #
 # Update:      docker compose -f compose.server.yaml pull && docker compose -f compose.server.yaml up -d
